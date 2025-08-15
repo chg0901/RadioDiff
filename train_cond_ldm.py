@@ -190,31 +190,31 @@ def main(args):
         )
     #=======================这个是用来之前做K图关键数据集加载部分 四月份重要部分====================================#
     elif data_cfg['name'] == 'radio':
-        dataset = loaders.RadioUNet_c(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/",simulation="DPM",carsSimul="no",carsInput="no")
+        dataset = loaders.RadioUNet_c(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/",simulation="DPM",carsSimul="no",carsInput="no")
     elif data_cfg['name'] == 'IRT4':
-        dataset = loaders.RadioUNet_c_sprseIRT4(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/", simulation="IRT4",carsSimul="no",carsInput="no")
+        dataset = loaders.RadioUNet_c_sprseIRT4(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/", simulation="IRT4",carsSimul="no",carsInput="no")
     # elif data_cfg['name'] == 'CARIRT4':
     #     dataset = loaders.RadioUNet_c_sprseIRT4(phase="train",dir_dataset="/home/DataDisk/qmzhang/RadioMapSeer/", simulation="IRT4",carsSimul="no",carsInput="no")
     elif data_cfg['name'] == 'IRT4K':
-        dataset = loaders.RadioUNet_c_sprseIRT4_K2(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/", simulation="IRT4",carsSimul="no",carsInput="K2")
+        dataset = loaders.RadioUNet_c_sprseIRT4_K2(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/", simulation="IRT4",carsSimul="no",carsInput="K2")
     elif data_cfg['name'] == 'DPMK':
-        dataset = loaders.RadioUNet_c_K2(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/", simulation="DPM",carsSimul="no",carsInput="K2")
+        dataset = loaders.RadioUNet_c_K2(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/", simulation="DPM",carsSimul="no",carsInput="K2")
     elif data_cfg['name'] == 'DPMCAR':
-        dataset = loaders.RadioUNet_c_WithCar_NOK_or_K(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/", simulation="DPM", have_K2="no")
+        dataset = loaders.RadioUNet_c_WithCar_NOK_or_K(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/", simulation="DPM", have_K2="no")
     elif data_cfg['name'] == 'DPMCARK':
-        dataset = loaders.RadioUNet_c_WithCar_NOK_or_K(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/", simulation="DPM", have_K2="yes")
+        dataset = loaders.RadioUNet_c_WithCar_NOK_or_K(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/", simulation="DPM", have_K2="yes")
 
     #=======================这一部分是用来加载建筑物边缘采样的关键数据集部分 五月份重要部分=============================#
     elif data_cfg['name'] == 'MASK':
-        dataset = loaders.RadioUNet_s(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/",mask=True)
+        dataset = loaders.RadioUNet_s(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/",mask=True)
     elif data_cfg['name'] == 'MASK_R':
-        dataset = loaders.RadioUNet_s(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/")
+        dataset = loaders.RadioUNet_s(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/")
     elif data_cfg['name'] == 'RANDOM':
-        dataset = loaders.RadioUNet_s_random(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/", mask=True)
+        dataset = loaders.RadioUNet_s_random(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/", mask=True)
     elif data_cfg['name'] == 'VERTEX':
-        dataset = loaders.RadioUNet_s_vertex(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/", mask=True)
+        dataset = loaders.RadioUNet_s_vertex(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/", mask=True)
     elif data_cfg['name'] == 'VERTEX_R':
-        dataset = loaders.RadioUNet_s_vertex(phase="train",dir_dataset="/home/disk01/qmzhang/RadioMapSeer/")
+        dataset = loaders.RadioUNet_s_vertex(phase="train",dir_dataset="~/Documents/dataset/RadioMapSeer/")
     else:
         raise NotImplementedError
     

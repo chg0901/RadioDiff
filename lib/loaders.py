@@ -25,7 +25,7 @@ class RadioUNet_c_sprseIRT4(Dataset):
     """RadioMapSeer Loader for accurate buildings and no measurements (RadioUNet_c)"""
     def __init__(self,maps_inds=np.zeros(1), phase="train",
                  ind1=0,ind2=0, 
-                 dir_dataset="/home/DataDisk/qmzhang/RadioMapSeer/",
+                 dir_dataset="~/Documents/dataset/RadioMapSeer/",
                  numTx=80,                  
                  thresh=0.2,
                  simulation="IRT4",
@@ -251,7 +251,7 @@ class RadioUNet_c_sprseIRT4_K2(Dataset):
     """RadioMapSeer Loader for accurate buildings and no measurements (RadioUNet_c)"""
     def __init__(self,maps_inds=np.zeros(1), phase="train",
                  ind1=0,ind2=0, 
-                 dir_dataset="/home/DataDisk/qmzhang/RadioMapSeer/",
+                 dir_dataset="~/Documents/dataset/RadioMapSeer/",
                  numTx=80,                  
                  thresh=0.2,
                  simulation="IRT4",
@@ -467,7 +467,7 @@ class RadioUNet_c_K2(Dataset):
     """RadioMapSeer Loader for accurate buildings and no measurements (RadioUNet_c)"""
     def __init__(self,maps_inds=np.zeros(1), phase="train",
                  ind1=0,ind2=0, 
-                 dir_dataset="/home/DataDisk/qmzhang/RadioMapSeer/",
+                 dir_dataset="~/Documents/dataset/RadioMapSeer/",
                  numTx=80,                  
                  thresh=0.05,
                  simulation="DPM",
@@ -687,7 +687,7 @@ class RadioUNet_c_K2(Dataset):
 class RadioUNet_c_WithCar_NOK_or_K(Dataset):
     def __init__(self,maps_inds=np.zeros(1), phase="train",
                  ind1=0,ind2=0, 
-                 dir_dataset="/home/DataDisk/qmzhang/RadioMapSeer/",
+                 dir_dataset="~/Documents/dataset/RadioMapSeer/",
                  numTx=80,                  
                  thresh=0.05,
                  simulation="DPM",
@@ -933,7 +933,7 @@ class RadioUNet_c(Dataset):
     """RadioMapSeer Loader for accurate buildings and no measurements (RadioUNet_c)"""
     def __init__(self,maps_inds=np.zeros(1), phase="train",
                  ind1=0,ind2=0, 
-                 dir_dataset="/home/DataDisk/qmzhang/RadioMapSeer/",
+                 dir_dataset="~/Documents/dataset/RadioMapSeer/",
                  numTx=80,                  
                  thresh=0.05,
                  simulation="DPM",
