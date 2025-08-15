@@ -1,0 +1,35 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "Discriminator Network"
+        A[Input Image<br/>320×320×1] --> B[Conv2D 64]
+        B --> C[LeakyReLU]
+        C --> D[Conv2D 128]
+        D --> E[LeakyReLU]
+        E --> F[Conv2D 256]
+        F --> G[LeakyReLU]
+        G --> H[Conv2D 512]
+        H --> I[LeakyReLU]
+        I --> J[Conv2D 1]
+        J --> K[Sigmoid]
+        K --> L[Real/Fake Score]
+    end
+    
+    style A fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px,font-weight:bold
+    style L fill:#ffcdd2,stroke:#c62828,stroke-width:2px,font-weight:bold

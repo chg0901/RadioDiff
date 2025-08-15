@@ -1,0 +1,9 @@
+graph TB
+    A[Input 320×320×1] --> B[Conv2d 128]
+    B --> C[Downsample 160×160×128]
+    C --> D[ResBlock×2 160×160×128]
+    D --> E[Downsample 80×80×256]
+    E --> F[ResBlock×2 80×80×256]
+    F --> G[Downsample 40×40×512]
+    G --> H[ResBlock×2 40×40×512]
+    H --> I[Output 40×40×512]

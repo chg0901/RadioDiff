@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioDiff Training Architecture Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #3498db;
+        }
+        .section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+        .section h3 {
+            color: #34495e;
+            margin-top: 20px;
+            font-size: 1.3em;
+        }
+        .mermaid {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .math-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .config-table th, .config-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .config-table th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        .config-table tr:hover {
+            background: #f8f9fa;
+        }
+        .highlight {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+            margin: 15px 0;
+        }
+        .flow-diagram {
+            background: linear-gradient(45deg, #f39c12, #e74c3c);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📡 RadioDiff Training Architecture</h1>
+            <p>Conditional Latent Diffusion Model for Radio Map Construction</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>🏗️ System Architecture Overview</h2>
+                <div class="mermaid">
+graph TB
+    subgraph "Input Data Pipeline"
+        A[RadioMapSeer Dataset] --> B[DataLoader<br/>batch_size: 66]
+        B --> C[Batch Processing<br/>gradient_accumulate_every: 8]
+        C --> D[Input Tensors<br/>image: B×1×320×320<br/>cond: B×3×320×320]
+    end
+    
+    subgraph "First Stage: VAE Encoder"
+        E[AutoencoderKL<br/>embed_dim: 3] --> F[Encoder<br/>ResNet-based]
+        F --> G[Latent Space z<br/>z~q_φ(z|x)<br/>Shape: [B, 3, 80, 80]]
+        G --> H[16× Compression<br/>320×320 → 80×80]
+    end
+    
+    subgraph "Second Stage: Conditional U-Net"
+        I[Conditional U-Net<br/>dim: 128] --> J[Time Embedding<br/>Sinusoidal]
+        J --> K[Condition Integration<br/>Swin Transformer]
+        K --> L[Multi-scale Features<br/>dim_mults: [1,2,4,4]]
+        L --> M[Noise Prediction<br/>ε_θ(x_t, t, c)]
+    end
+    
+    subgraph "Diffusion Process"
+        N[Forward Diffusion<br/>q(x_t|x_0)] --> O[Noise Schedule<br/>β_t: linear]
+        O --> P[Reverse Process<br/>p_θ(x_0|x_t)]
+        P --> Q[Objective: pred_KC<br/>Knowledge-aware]
+    end
+    
+    subgraph "Training Loop"
+        R[Loss Computation<br/>L2 Loss] --> S[Backpropagation]
+        S --> T[AdamW Optimizer<br/>lr: 5e-5]
+        T --> U[EMA Model Update<br/>β: 0.999]
+    end
+    
+    D --> E
+    G --> I
+    M --> R
+    Q --> R
+    
+    style A fill:#e1f5fe
+    style E fill:#f3e5f5
+    style I fill:#e8f5e8
+    style N fill:#fff3e0
+    style R fill:#fce4ec
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🧮 Mathematical Foundations</h2>
+                <div class="math-box">
+                    <strong>Forward Diffusion Process:</strong><br>
+                    q(x_t|x_0) = 𝒩(x_t; √(ᾱ_t)x_0, (1-ᾱ_t)𝐈)<br>
+                    where ᾱ_t = ∏(i=1 to t) (1-β_i)
+                </div>
+                <div class="math-box">
+                    <strong>Knowledge-Aware Objective:</strong><br>
+                    ℒ_KC = 𝔼[t,x₀,c,ε] [ ‖ε - ε_θ(x_t, t, c)‖² ]<br>
+                    where x_t = √(ᾱ_t)x_0 + √(1-ᾱ_t)ε
+                </div>
+                <div class="math-box">
+                    <strong>VAE ELBO:</strong><br>
+                    ELBO = 𝔼[q_φ(z|x)][log p_θ(x|z)] - D_KL(q_φ(z|x) ‖ p(z))
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ Configuration Parameters</h2>
+                <table class="config-table">
+                    <tr>
+                        <th>Component</th>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td rowspan="4">Model</td>
+                        <td>model_type</td>
+                        <td>const_sde</td>
+                        <td>Constant SDE diffusion model</td>
+                    </tr>
+                    <tr>
+                        <td>timesteps</td>
+                        <td>1000</td>
+                        <td>Forward diffusion steps</td>
+                    </tr>
+                    <tr>
+                        <td>objective</td>
+                        <td>pred_KC</td>
+                        <td>Knowledge-aware prediction</td>
+                    </tr>
+                    <tr>
+                        <td>scale_factor</td>
+                        <td>0.3</td>
+                        <td>Latent space scaling</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">VAE</td>
+                        <td>embed_dim</td>
+                        <td>3</td>
+                        <td>Latent dimension</td>
+                    </tr>
+                    <tr>
+                        <td>resolution</td>
+                        <td>[320, 320]</td>
+                        <td>Input image size</td>
+                    </tr>
+                    <tr>
+                        <td>z_channels</td>
+                        <td>3</td>
+                        <td>Latent channels</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4">U-Net</td>
+                        <td>dim</td>
+                        <td>128</td>
+                        <td>Base dimension</td>
+                    </tr>
+                    <tr>
+                        <td>channels</td>
+                        <td>3</td>
+                        <td>Input channels</td>
+                    </tr>
+                    <tr>
+                        <td>dim_mults</td>
+                        <td>[1,2,4,4]</td>
+                        <td>Multi-scale factors</td>
+                    </tr>
+                    <tr>
+                        <td>cond_dim</td>
+                        <td>128</td>
+                        <td>Condition dimension</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4">Training</td>
+                        <td>batch_size</td>
+                        <td>66</td>
+                        <td>Batch size</td>
+                    </tr>
+                    <tr>
+                        <td>gradient_accumulate_every</td>
+                        <td>8</td>
+                        <td>Gradient accumulation</td>
+                    </tr>
+                    <tr>
+                        <td>lr</td>
+                        <td>5e-5</td>
+                        <td>Learning rate</td>
+                    </tr>
+                    <tr>
+                        <td>train_num_steps</td>
+                        <td>50000</td>
+                        <td>Total training steps</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>🔄 Data Flow Processing</h2>
+                <div class="mermaid">
+flowchart TD
+    subgraph "Data Loading Pipeline"
+        A[RadioMapSeer Dataset] --> B[RadioUNet_c Loader]
+        B --> C[Batch Creation<br/>Effective Batch: 66×8=528]
+        C --> D[Data Preprocessing]
+    end
+    
+    subgraph "Input Tensor Structure"
+        E[Image Tensor<br/>B×1×320×320] --> F[Normalization<br/>[-1, 1]]
+        G[Condition Tensor<br/>B×3×320×320] --> H[Building Layout<br/>Multi-channel]
+        I[Optional Mask<br/>B×1×320×320] --> J[Binary Mask<br/>Processing]
+    end
+    
+    subgraph "Training Batch"
+        K[Batch Dictionary] --> L[image: Radio Map]
+        K --> M[cond: Building Info]
+        K --> N[ori_mask: Spatial Mask]
+        K --> O[img_name: Metadata]
+    end
+    
+    subgraph "Forward Pass"
+        P[VAE Encoder] --> Q[Latent Representation<br/>B×3×80×80]
+        Q --> R[Conditional U-Net]
+        R --> S[Noise Prediction<br/>B×3×80×80]
+        S --> T[Loss Computation]
+    end
+    
+    D --> E
+    D --> G
+    D --> I
+    F --> L
+    H --> M
+    J --> N
+    L --> K
+    M --> K
+    N --> K
+    K --> P
+    Q --> R
+    
+    style A fill:#e8f5e8
+    style K fill:#fff3e0
+    style P fill:#e3f2fd
+    style T fill:#fce4ec
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Training Optimization Strategy</h2>
+                <div class="mermaid">
+graph LR
+    subgraph "Learning Rate Schedule"
+        A[Initial LR: 5e-5] --> B[Cosine Decay<br/>lr(t) = max(lr_min, lr_max × (1-t/T)^0.96)]
+        B --> C[Minimum LR: 5e-6]
+    end
+    
+    subgraph "Optimization Setup"
+        D[AdamW Optimizer] --> E[Weight Decay: 1e-4]
+        E --> F[Gradient Clipping: 1.0]
+        F --> G[Gradient Accumulation: 8 steps]
+    end
+    
+    subgraph "Model Regularization"
+        H[EMA Update] --> I[β = 0.999]
+        I --> J[Update after: 10,000 steps]
+        J --> K[Update every: 10 steps]
+    end
+    
+    subgraph "Training Schedule"
+        L[Total Steps: 50,000] --> M[Save Every: 200 steps]
+        M --> N[Checkpoint: model-{step}.pt]
+        N --> O[Sample Generation<br/>Every Save]
+    end
+    
+    A --> D
+    D --> H
+    H --> L
+    
+    style A fill:#e3f2fd
+    style D fill:#f1f8e9
+    style H fill:#fff8e1
+    style L fill:#f3e5f5
+                </div>
+                
+                <div class="highlight">
+                    <strong>Key Optimization Features:</strong>
+                    <ul>
+                        <li><strong>Effective Batch Size:</strong> 528 (66 × 8 gradient accumulation)</li>
+                        <li><strong>Memory Efficiency:</strong> Latent space compression (16× reduction)</li>
+                        <li><strong>Stability:</strong> EMA model for consistent training</li>
+                        <li><strong>Monitoring:</strong> TensorBoard logging every 1000 steps</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔬 Model Innovation Highlights</h2>
+                <div class="flow-diagram">
+                    <h3>🌟 Key Theoretical Innovations</h3>
+                    <div class="mermaid">
+graph TB
+    subgraph "Radio Map as Generative Problem"
+        A[Traditional: Discriminative] --> B[RadioDiff: Generative]
+        B --> C[Conditional Generation<br/>p(x|c)]
+        C --> D[Uncertainty Quantification]
+        D --> E[Multi-modal Solutions]
+    end
+    
+    subgraph "Knowledge-Aware Diffusion"
+        F[Standard Diffusion] --> G[RadioDiff: pred_KC]
+        G --> H[Radio Physics Constraints]
+        H --> I[Building Layout Awareness]
+        I --> J[Propagation Modeling]
+    end
+    
+    subgraph "Computational Efficiency"
+        K[Sampling-Based Methods] --> L[RadioDiff: Sampling-Free]
+        L --> M[No Field Measurements]
+        M --> N[Real-time Generation]
+        N --> O[6G Network Integration]
+    end
+    
+    style B fill:#e8f5e8
+    style G fill:#fff3e0
+    style L fill:#f3e5f5
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Performance Advantages:</strong>
+                    <ul>
+                        <li><strong>Accuracy:</strong> State-of-the-art in RMSE, SSIM, PSNR metrics</li>
+                        <li><strong>Speed:</strong> Single-step sampling for inference</li>
+                        <li><strong>Generalization:</strong> Handles unseen building layouts</li>
+                        <li><strong>Scalability:</strong> Efficient for large-scale 6G networks</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Training Execution Flow</h2>
+                <div class="mermaid">
+sequenceDiagram
+    participant Main as main()
+    participant Config as configs/radio_train.yaml
+    participant VAE as AutoencoderKL
+    participant UNet as Conditional U-Net
+    participant LDM as LatentDiffusion
+    participant Trainer as Trainer Class
+    participant Data as RadioUNet_c Dataset
+    
+    Main->>Config: Load YAML Configuration
+    Config->>Main: Model & Training Parameters
+    
+    Main->>VAE: Initialize First Stage
+    VAE->>Main: Pre-trained VAE Encoder
+    
+    Main->>UNet: Initialize Conditional U-Net
+    UNet->>Main: Swin Transformer Backbone
+    
+    Main->>LDM: Create LatentDiffusion Model
+    LDM->>Main: Combined VAE + U-Net
+    
+    Main->>Data: Load RadioMapSeer Dataset
+    Data->>Main: DataLoader with Batching
+    
+    Main->>Trainer: Initialize Training Loop
+    Trainer->>Trainer: Setup Optimizer & EMA
+    
+    loop Training Steps (50,000)
+        Trainer->>Data: Get Batch
+        Data->>Trainer: image, cond, mask
+        
+        Trainer->>LDM: Forward Pass
+        LDM->>Trainer: Loss & Predictions
+        
+        Trainer->>Trainer: Backpropagation
+        Trainer->>Trainer: Optimizer Step
+        
+        Trainer->>Trainer: EMA Update
+        
+        alt Every 200 Steps
+            Trainer->>Trainer: Save Checkpoint
+            Trainer->>Trainer: Generate Samples
+        end
+    end
+    
+    Note over Main,Trainer: Training Complete: model-250.pt
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>📡 RadioDiff Training Architecture Visualization</p>
+            <p>Based on IEEE TCCN Paper: "RadioDiff: An Effective Generative Diffusion Model for Sampling-Free Dynamic Radio Map Construction"</p>
+            <p>Generated from analysis of train_cond_ldm.py and configs/radio_train.yaml</p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#3498db',
+                primaryTextColor: '#2c3e50',
+                primaryBorderColor: '#2980b9',
+                lineColor: '#34495e',
+                secondaryColor: '#ecf0f1',
+                tertiaryColor: '#f8f9fa'
+            }
+        });
+    </script>
+</body>
+</html>

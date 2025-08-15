@@ -1,0 +1,39 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '16px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph TB
+    subgraph "Loss Metrics Logging System"
+        A[Total Loss] --> B[Training Logs]
+        C[KL Loss] --> B
+        D[NLL Loss] --> B
+        E[Reconstruction Loss] --> B
+        F[Generator Loss] --> B
+        G[Adaptive Weight] --> B
+        H[Discriminator Factor] --> B
+        I[Log Variance] --> B
+        
+        B --> J[TensorBoard]
+        B --> K[Console Output]
+        B --> L[Checkpoint Saving]
+    end
+    
+    style A fill:#ffecb3,stroke:#ff8f00,stroke-width:3px,font-weight:bold
+    style C fill:#fff3e0,stroke:#e65100,stroke-width:3px,font-weight:bold
+    style D fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,font-weight:bold
+    style F fill:#e3f2fd,stroke:#1565c0,stroke-width:3px,font-weight:bold
+    style J fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,font-weight:bold

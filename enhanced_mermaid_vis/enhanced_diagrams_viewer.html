@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioDiff VAE Enhanced Diagrams Viewer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .diagram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .diagram-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .diagram-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .diagram-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .diagram-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .diagram-description {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 RadioDiff VAE Enhanced Diagrams Viewer</h1>
+        <p>Interactive viewer for all enhanced mermaid diagrams with improved styling and resolution</p>
+    </div>
+    
+    <div class="diagram-grid">
+
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 1: Loss function architecture overview showing the complete VAE-GAN training pipeline</div>
+            <img src="enhanced_diagram_1.png" alt="Enhanced Diagram 1">
+            <div class="diagram-description">Loss function architecture overview showing the complete VAE-GAN training pipeline</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 2: Reconstruction loss pipeline with L1 and MSE components for input-output comparison</div>
+            <img src="enhanced_diagram_2.png" alt="Enhanced Diagram 2">
+            <div class="diagram-description">Reconstruction loss pipeline with L1 and MSE components for input-output comparison</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 3: Perceptual loss integration using LPIPS network for feature space comparison</div>
+            <img src="enhanced_diagram_3.png" alt="Enhanced Diagram 3">
+            <div class="diagram-description">Perceptual loss integration using LPIPS network for feature space comparison</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 4: Variational lower bound calculation with learnable variance parameter</div>
+            <img src="enhanced_diagram_4.png" alt="Enhanced Diagram 4">
+            <div class="diagram-description">Variational lower bound calculation with learnable variance parameter</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 5: KL divergence loss computation for latent space regularization</div>
+            <img src="enhanced_diagram_5.png" alt="Enhanced Diagram 5">
+            <div class="diagram-description">KL divergence loss computation for latent space regularization</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 6: Discriminator network architecture for adversarial training</div>
+            <img src="enhanced_diagram_6.png" alt="Enhanced Diagram 6">
+            <div class="diagram-description">Discriminator network architecture for adversarial training</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 7: Generator adversarial training component for realistic generation</div>
+            <img src="enhanced_diagram_7.png" alt="Enhanced Diagram 7">
+            <div class="diagram-description">Generator adversarial training component for realistic generation</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 8: Discriminator training with hinge loss for real/fake classification</div>
+            <img src="enhanced_diagram_8.png" alt="Enhanced Diagram 8">
+            <div class="diagram-description">Discriminator training with hinge loss for real/fake classification</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 9: Adaptive weight calculation using gradient norm balancing</div>
+            <img src="enhanced_diagram_9.png" alt="Enhanced Diagram 9">
+            <div class="diagram-description">Adaptive weight calculation using gradient norm balancing</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 10: Phase 1 VAE pre-training with reconstruction and KL losses</div>
+            <img src="enhanced_diagram_10.png" alt="Enhanced Diagram 10">
+            <div class="diagram-description">Phase 1 VAE pre-training with reconstruction and KL losses</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 11: Phase 2 VAE-GAN training with full adversarial components</div>
+            <img src="enhanced_diagram_11.png" alt="Enhanced Diagram 11">
+            <div class="diagram-description">Phase 2 VAE-GAN training with full adversarial components</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 12: Comprehensive loss metrics logging system</div>
+            <img src="enhanced_diagram_12.png" alt="Enhanced Diagram 12">
+            <div class="diagram-description">Comprehensive loss metrics logging system</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 13: Edge-aware loss components for radio astronomy applications</div>
+            <img src="enhanced_diagram_13.png" alt="Enhanced Diagram 13">
+            <div class="diagram-description">Edge-aware loss components for radio astronomy applications</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 14: Radio propagation physics integration with DPM2IRT4 modeling</div>
+            <img src="enhanced_diagram_14.png" alt="Enhanced Diagram 14">
+            <div class="diagram-description">Radio propagation physics integration with DPM2IRT4 modeling</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 15: Two-phase training strategy with progressive learning</div>
+            <img src="enhanced_diagram_15.png" alt="Enhanced Diagram 15">
+            <div class="diagram-description">Two-phase training strategy with progressive learning</div>
+        </div>
+        <div class="diagram-card">
+            <div class="diagram-title">Diagram 16: Loss weight dynamics and evolution during training</div>
+            <img src="enhanced_diagram_16.png" alt="Enhanced Diagram 16">
+            <div class="diagram-description">Loss weight dynamics and evolution during training</div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Generated with enhanced mermaid rendering • RadioDiff VAE Documentation</p>
+    </div>
+</body>
+</html>

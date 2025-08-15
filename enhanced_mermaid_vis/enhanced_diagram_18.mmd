@@ -1,0 +1,36 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '16px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph TB
+    subgraph "Loss Implementation Guidelines"
+        A[Gradient Clipping] --> B[Stable Training]
+        C[Learnable Variance] --> D[Adaptive Uncertainty]
+        E[Adaptive Weights] --> F[Balanced Optimization]
+        G[Two-Phase Strategy] --> H[Progressive Learning]
+    end
+    
+    subgraph "Monitoring Recommendations"
+        I[Loss Curves] --> J[Convergence Analysis]
+        K[Gradient Norms] --> L[Training Stability]
+        M[Discriminator Balance] --> N[GAN Health]
+    end
+    
+    style A fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,font-weight:bold
+    style C fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,font-weight:bold
+    style E fill:#fff3e0,stroke:#e65100,stroke-width:2px,font-weight:bold
+    style G fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px,font-weight:bold

@@ -1,0 +1,12 @@
+graph TD
+    A[Input Radio Data<br/>320×320×1] --> B[Encoder]
+    B --> C[Latent Space<br/>3-dimensional]
+    C --> D[Decoder]
+    D --> E[Reconstructed Data<br/>320×320×1]
+    
+    F[Discriminator] --> G[Adversarial Training]
+    E --> G
+    G --> H[Loss Calculation]
+    
+    I[KL Divergence] --> H
+    J[Reconstruction Loss] --> H

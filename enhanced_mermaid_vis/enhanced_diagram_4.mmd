@@ -1,0 +1,27 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    A[Input Images] --> B[LPIPS Network<br/>Pre-trained VGG]
+    C[Reconstructions] --> B
+    B --> D[Feature Space<br/>Comparison]
+    D --> E[Perceptual Distance<br/>L_perceptual]
+    E --> F[Weighted Addition<br/>L_rec + w_p × L_perceptual]
+    
+    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,font-weight:bold
+    style F fill:#ffecb3,stroke:#ff8f00,stroke-width:3px,font-weight:bold

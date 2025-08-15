@@ -1,0 +1,29 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "Generator Adversarial Training"
+        A[VAE Generator] --> B[Reconstructions]
+        B --> C[Discriminator]
+        C --> D[Logits: Fake]
+        D --> E[Generator Loss<br/>L_g = -mean of logits_fake]
+        E --> F[Encourage Realistic<br/>Generations]
+    end
+    
+    style A fill:#e1f5fe,stroke:#0277bd,stroke-width:3px,font-weight:bold
+    style E fill:#ffebee,stroke:#c62828,stroke-width:3px,font-weight:bold

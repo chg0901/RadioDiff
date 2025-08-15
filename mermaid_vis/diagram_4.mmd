@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant D as Data Loader
+    participant E as Encoder
+    participant G as Generator
+    participant D2 as Decoder
+    participant Disc as Discriminator
+    participant O as Optimizer
+    
+    loop Training Steps 50,001-150,000
+        D->>E: Load batch (8 samples)
+        E->>G: Encode to latent space
+        G->>D2: Generate reconstruction
+        D2->>Disc: Real vs Fake classification
+        Disc->>O: Adversarial loss calculation
+        O->>O: Update all components
+        Note over O: Discriminator active<br/>Disc weight: 0.5
+    end

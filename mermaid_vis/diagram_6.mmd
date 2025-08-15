@@ -1,0 +1,10 @@
+graph TB
+    A[Latent 40×40×3] --> B[Conv2d 512]
+    B --> C[ResBlock×2 40×40×512]
+    C --> D[Upsample 80×80×256]
+    D --> E[ResBlock×2 80×80×256]
+    E --> F[Upsample 160×160×128]
+    F --> G[ResBlock×2 160×160×128]
+    G --> H[Upsample 320×320×128]
+    H --> I[Conv2d 1]
+    I --> J[Output 320×320×1]

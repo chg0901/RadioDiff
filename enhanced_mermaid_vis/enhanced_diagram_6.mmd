@@ -1,0 +1,31 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "KL Divergence Components"
+        A[Encoder Output<br/>mu, sigma] --> B[Posterior<br/>q(z|x) = N(mu, sigma2)]
+        C[Prior<br/>p(z) = N(0, I)] --> D[KL Divergence<br/>KL Divergence]
+        B --> D
+    end
+    
+    D --> E[Batch Mean<br/>L_kl = mean(KL)]
+    E --> F[Weighted KL<br/>w_kl × L_kl]
+    
+    style A fill:#bbdefb,stroke:#1565c0,stroke-width:3px,font-weight:bold
+    style C fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,font-weight:bold
+    style F fill:#fff9c4,stroke:#f57f17,stroke-width:3px,font-weight:bold

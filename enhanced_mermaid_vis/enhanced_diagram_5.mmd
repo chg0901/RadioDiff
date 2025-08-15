@@ -1,0 +1,32 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "Learnable Variance Parameter"
+        A[logvar<br/>Learnable Parameter] --> B[exp of logvar]
+        B --> C[Variance Scaling<br/>Inverse]
+        B --> D[Log Variance<br/>Log Value]
+    end
+    
+    E[Reconstruction Loss] --> F[Scaled Loss<br/>Scaled L_rec]
+    C --> F
+    D --> G[NLL Loss<br/>NLL Formula]
+    F --> G
+    
+    style A fill:#e1bee7,stroke:#6a1b9a,stroke-width:3px,font-weight:bold
+    style G fill:#ffcdd2,stroke:#c62828,stroke-width:3px,font-weight:bold

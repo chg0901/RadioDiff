@@ -1,0 +1,18 @@
+gantt
+    title RadioDiff VAE Training Schedule
+    dateFormat  X
+    axisFormat %d
+    
+    section Phase 1: VAE Pre-training
+    VAE Training       :a1, 0, 50000
+    Discriminator Off :a2, after a1, 0
+    
+    section Phase 2: VAE-GAN Training
+    Discriminator On  :a3, 50001, 100000
+    GAN Training      :a4, after a3, 0
+    
+    section Milestones
+    Checkpoint 10K    :milestone, 10000, 0
+    Checkpoint 50K    :milestone, 50000, 0
+    Checkpoint 100K   :milestone, 100000, 0
+    Final Checkpoint  :milestone, 150000, 0

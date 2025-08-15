@@ -1,0 +1,37 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "Loss Weight Dynamics"
+        A[Training Step] --> B[Phase 1: 0-50K]
+        A --> C[Phase 2: 50K-150K]
+        
+        B --> D[Loss Weights]
+        C --> E[Loss Weights]
+        
+        D --> F[KL Weight: 1e-06<br/>Disc Weight: 0.0<br/>Adv Weight: 0.0]
+        E --> G[KL Weight: 1e-06<br/>Disc Weight: 0.5<br/>Adv Weight: Adaptive]
+        
+        F --> H[Total Loss<br/>L_nll + w_kl * L_kl]
+        G --> I[Total Loss<br/>L_nll + w_kl * L_kl + w_d * L_disc + w_adv * L_adv]
+    end
+    
+    style F fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px,font-weight:bold
+    style G fill:#fff3e0,stroke:#e65100,stroke-width:2px,font-weight:bold
+    style H fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,font-weight:bold
+    style I fill:#ffcdd2,stroke:#c62828,stroke-width:2px,font-weight:bold

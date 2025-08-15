@@ -1,0 +1,36 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '16px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph TB
+    subgraph "Radio Propagation Physics Integration"
+        A[Input Power Scale] --> B[Path Loss dB<br/>-147 to -47 dB]
+        B --> C[Power dBm<br/>Source + Path Loss]
+        C --> D[Power Watts<br/>10^(dBm/10)]
+        
+        D --> E[Helmholtz Equation<br/>∇²u + k²u = 0]
+        E --> F[PINN Loss<br/>L_pinn]
+        
+        G[Edge Constraints] --> H[Edge Loss<br/>L_edge]
+        
+        F --> I[Total Physics Loss<br/>L_physics = L_rec + L_edge + L_pinn]
+        H --> I
+    end
+    
+    style B fill:#fff3e0,stroke:#e65100,stroke-width:2px,font-weight:bold
+    style E fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,font-weight:bold
+    style I fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,font-weight:bold

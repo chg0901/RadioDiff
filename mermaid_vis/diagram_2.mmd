@@ -1,0 +1,14 @@
+flowchart LR
+    A[Radio Data<br/>320×320×1] --> B[Encoder<br/>Downsampling]
+    B --> C[Latent Representation<br/>40×40×3]
+    C --> D[Quantization]
+    D --> E[Decoder<br/>Upsampling]
+    E --> F[Reconstructed Output]
+    
+    G[Real Data] --> H[Discriminator]
+    F --> H
+    H --> I[Adversarial Loss]
+    
+    J[KL Loss] --> K[Total Loss]
+    I --> K
+    L[Reconstruction Loss] --> K

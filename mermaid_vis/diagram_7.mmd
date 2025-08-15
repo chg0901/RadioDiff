@@ -1,0 +1,13 @@
+graph TD
+    A[Total Loss] --> B[Reconstruction Loss]
+    A --> C[KL Divergence]
+    A --> D[Adversarial Loss]
+    
+    B --> E[L1/L2 Reconstruction]
+    C --> F[KL Weight × KL Divergence]
+    D --> G[Discriminator Weight × Disc Loss]
+    
+    F --> H[Phase 1: 1e-06 × KL]
+    F --> I[Phase 2: Active]
+    G --> J[Phase 1: 0.0]
+    G --> K[Phase 2: 0.5 × Disc Loss]

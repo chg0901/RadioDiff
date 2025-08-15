@@ -1,0 +1,33 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "Discriminator Training"
+        A[Real Images] --> B[Discriminator]
+        C[Fake Images] --> B
+        B --> D[Real Logits]
+        B --> E[Fake Logits]
+        D --> F[Hinge Loss<br/>max of 0 and 1 - real]
+        E --> G[Hinge Loss<br/>max of 0 and 1 + fake]
+        F --> H[Total D Loss<br/>L_d = L_real + L_fake]
+        G --> H
+    end
+    
+    style A fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,font-weight:bold
+    style C fill:#ffcdd2,stroke:#c62828,stroke-width:3px,font-weight:bold
+    style H fill:#fff3e0,stroke:#e65100,stroke-width:3px,font-weight:bold

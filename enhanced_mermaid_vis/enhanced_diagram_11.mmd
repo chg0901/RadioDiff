@@ -1,0 +1,34 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "Phase 1: VAE Pre-training (Steps 0-50,000)"
+        A[NLL Loss<br/>L_nll] --> D[Total Loss]
+        B[KL Loss<br/>w_kl × L_kl] --> D
+        C[Adversarial Loss<br/>0.0 disc_factor_0] --> D
+        
+        D --> E[L_total = L_nll + w_kl * L_kl]
+        
+        F[disc_factor] --> G[Adopt Weight<br/>disc_factor = 0]
+        H[global_step < 50001] --> G
+    end
+    
+    style A fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,font-weight:bold
+    style B fill:#fff3e0,stroke:#e65100,stroke-width:3px,font-weight:bold
+    style C fill:#ffcdd2,stroke:#c62828,stroke-width:3px,font-weight:bold
+    style E fill:#e1f5fe,stroke:#0277bd,stroke-width:3px,font-weight:bold

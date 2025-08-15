@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant D as Data Loader
+    participant E as Encoder
+    participant L as Latent Space
+    participant D2 as Decoder
+    participant O as Optimizer
+    
+    loop Training Steps 0-50,000
+        D->>E: Load batch (8 samples)
+        E->>L: Encode to latent space
+        L->>D2: Decode to reconstruction
+        D2->>O: Calculate reconstruction loss
+        O->>O: Update encoder/decoder weights
+        Note over O: Discriminator inactive<br/>KL weight: 1e-06
+    end

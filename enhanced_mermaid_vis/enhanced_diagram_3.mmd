@@ -1,0 +1,30 @@
+%%{
+  init: {
+    'theme': 'default',
+    'themeVariables': {
+      'primaryColor': '#ff6b6b',
+      'primaryTextColor': '#2c3e50',
+      'primaryBorderColor': '#3498db',
+      'lineColor': '#34495e',
+      'secondaryColor': '#f8f9fa',
+      'tertiaryColor': '#e9ecef',
+      'clusterBkg': '#ffffff',
+      'clusterBorder': '#dee2e6',
+      'fontSize': '18px',
+      'fontFamily': 'Arial, sans-serif'
+    }
+  }
+}%%
+
+graph LR
+    subgraph "Reconstruction Loss Pipeline"
+        A[Ground Truth<br/>x ∈ R^320x320x1] --> B[VAE Reconstruction<br/>x_recon ∈ R^320x320x1]
+        B --> C[L1 Loss<br/>Absolute Difference]
+        B --> D[MSE Loss<br/>Squared Error]
+        C --> E[Reconstruction Loss<br/>L1 + MSE]
+        D --> E
+    end
+    
+    style A fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,font-weight:bold
+    style B fill:#e3f2fd,stroke:#1565c0,stroke-width:3px,font-weight:bold
+    style E fill:#fff3e0,stroke:#e65100,stroke-width:3px,font-weight:bold
