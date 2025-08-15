@@ -63,7 +63,8 @@ def main(args):
         gradient_accumulate_every=train_cfg['gradient_accumulate_every'],
         train_lr=train_cfg['lr'], train_num_steps=train_cfg['train_num_steps'],
         save_and_sample_every=train_cfg['save_and_sample_every'], results_folder=train_cfg['results_folder'],
-        amp=train_cfg['amp'], fp16=train_cfg['fp16'], log_freq= train_cfg['log_freq'], cfg=cfg,
+        amp=train_cfg['amp'], fp16=train_cfg['fp16'], log_freq= train_cfg['log_freq'], 
+        resume_milestone=train_cfg.get('resume_milestone', 0), cfg=cfg,
     )
     trainer.train()
     pass
@@ -154,9 +155,15 @@ class Trainer(object):
         self.logger.info(cfg)
         self.writer = SummaryWriter(results_folder)
         self.results_folder = Path(results_folder)
+        print(f"DEBUG: resume_milestone = {resume_milestone}")
         resume_file = str(self.results_folder / f'model-{resume_milestone}.pt')
+        print(f"DEBUG: Looking for resume file at {resume_file}")
+        print(f"DEBUG: File exists: {os.path.isfile(resume_file)}")
         if os.path.isfile(resume_file):
             self.load(resume_milestone)
+            print(f"Successfully resumed training from milestone {resume_milestone} at step {self.step}")
+        else:
+            print(f"No resume file found at {resume_file}, starting from step 0")
 
     def save(self, milestone):
         if not self.accelerator.is_local_main_process:
@@ -209,6 +216,10 @@ class Trainer(object):
                 img = batch['image'].to(device)
                 
                 
+                
+                # Initialize variables for logging
+                rec_loss = kl_loss = d_weight = disc_factor = g_loss = 0.0
+                disc_loss = logits_real = logits_fake = 0.0
                 
                 for ga_ind in range(self.gradient_accumulate_every):
                     # data = next(self.dl).to(device)
