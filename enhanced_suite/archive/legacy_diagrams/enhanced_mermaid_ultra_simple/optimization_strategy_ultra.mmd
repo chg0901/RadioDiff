@@ -1,0 +1,45 @@
+%% Enhanced Optimization Strategy - Ultra Simple
+graph TB
+    subgraph "📈 COSINE DECAY SCHEDULE"
+        A["Initial Learning Rate<br/>eta_0 = 5e-5<br/>Starting value"] --> B["Warmup Phase<br/>Optional<br/>Gradual increase"]
+        B --> C["Decay Function<br/>Cosine annealing<br/>Learning rate decay"]
+        C --> D["Minimum Learning Rate<br/>eta_min = 5e-6<br/>Floor value"]
+        D --> E["Total Training Steps<br/>T = 50,000<br/>Training duration"]
+    end
+    
+    subgraph "🔧 OPTIMIZATION PARAMETERS"
+        F["Optimizer Choice<br/>AdamW<br/>Adam with weight decay"] --> G["Weight Decay<br/>lambda = 1e-4<br/>L2 regularization"]
+        G --> H["Gradient Clipping<br/>max_norm = 1.0<br/>Stability constraint"]
+        H --> I["Gradient Accumulation<br/>8 steps<br/>Effective batch: 528"]
+        I --> J["Mixed Precision<br/>FP16<br/>Memory efficiency"]
+    end
+    
+    subgraph "🎯 MODEL REGULARIZATION"
+        K["EMA Update<br/>Exponential Moving Average<br/>Weight smoothing"] --> L["EMA Beta<br/>beta = 0.999<br/>Smoothing factor"]
+        L --> M["EMA Start Step<br/>10,000 steps<br/>After warmup"]
+        M --> N["Update Frequency<br/>Every 10 steps<br/>Regular updates"]
+        N --> O["EMA Benefits<br/>Stable convergence<br/>Better generalization"]
+    end
+    
+    subgraph "📊 CONVERGENCE MONITORING"
+        P["Loss Tracking<br/>Training & validation<br/>Performance metrics"] --> Q["Gradient Statistics<br/>Norm, variance<br/>Training health"]
+        Q --> R["Learning Rate Adjustment<br/>Dynamic scheduling<br/>Adaptive optimization"]
+        R --> S["Early Stopping<br/>Patience monitoring<br/>Prevent overfitting"]
+    end
+    
+    subgraph "⚡ MEMORY OPTIMIZATION"
+        T["Checkpoint Strategy<br/>Save every 200 steps<br/>Progress saving"] --> U["Gradient Checkpointing<br/>Memory trade-off<br/>Reduced memory"]
+        U --> V["Data Parallelism<br/>Multi-GPU support<br/>Scalability"]
+        V --> W["Batch Optimization<br/>66 + 8 accumulation<br/>Memory efficient"]
+    end
+    
+    E --> F
+    F --> K
+    K --> P
+    P --> T
+    
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
+    style F fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style K fill:#E8F5E8,stroke:#388E3C,stroke-width:3px
+    style P fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px
+    style T fill:#FFF3E0,stroke:#F57C00,stroke-width:3px

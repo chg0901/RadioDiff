@@ -1,0 +1,29 @@
+%% Enhanced Three-Column Diffusion Process - Ultra Simple
+graph TB
+    subgraph "📈 FORWARD DIFFUSION COLUMN"
+        A[["Clean Data x₀<br/>Radio map<br/>Original distribution"]] --> B[["Noise Schedule<br/>β_t: 0.0001→0.02<br/>1000 timesteps"]]
+        B --> C[["Noise Addition<br/>ε ~ N(0, I)<br/>Gaussian perturbation"]]
+        C --> D[["Noisy Data xₜ<br/>Forward process<br/>xₜ = √ᾱₜx₀ + √(1-ᾱₜ)ε"]]
+        D --> E[["Forward Distribution<br/>q(xₜ|x₀) = N(xₜ; √ᾱₜx₀, (1-ᾱₜ)I)<br/>Conditional Gaussian"]]
+        E --> F[["Final State x_T<br/>Pure noise<br/>N(0, I)"]]
+    end
+    
+    subgraph "🔄 REVERSE DIFFUSION COLUMN"
+        G[["Noisy Input xₜ<br/>Iterative denoising<br/>t = T, T-1, ..., 1"]] --> H[["Condition Integration<br/>Building layout c<br/>Spatial conditioning"]]
+        H --> I[["U-Net Prediction<br/>ε_θ(xₜ, t, c)<br/>Noise estimation"]]
+        I --> J[["Denoising Step<br/>xₜ₋₁ = f(xₜ, ε_θ)<br/>Reverse process"]]
+        J --> K[["Reverse Distribution<br/>p_θ(xₜ₋₁|xₜ, c)<br/>Learned reverse"]]
+        K --> L[["Clean Output x₀<br/>Reconstructed map<br/>Final result"]]
+    end
+    
+    subgraph "🎯 KNOWLEDGE-AWARE COLUMN"
+        M[["Training Objective<br/>pred_KC<br/>Radio propagation physics"]] --> N[["Loss Function<br/>L_KC = E||ε - ε_θ||²<br/>Mean squared error"]]
+        N --> O[["Physics Integration<br/>Electromagnetic constraints<br/>Domain knowledge"]]
+        O --> P[["Sampling Innovation<br/>Single-step inference<br/>Real-time generation"]]
+        P --> Q[["Computational Benefit<br/>1000× speedup<br/>Practical deployment"]]
+        Q --> R[["Field Measurement Free<br/>No expensive sampling<br/>Cost-effective"]]
+    end
+    
+    style A fill:#FFF3E0,stroke:#F57C00,stroke-width:3px
+    style G fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
+    style M fill:#E3F2FD,stroke:#1976D2,stroke-width:3px

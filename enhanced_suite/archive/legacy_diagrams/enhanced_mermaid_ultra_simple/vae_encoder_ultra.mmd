@@ -1,0 +1,27 @@
+%% Enhanced VAE Encoder Architecture - Ultra Simple
+graph LR
+    subgraph "🏗️ VAE ENCODER PIPELINE"
+        A[["Input Radio Map<br/>320×320×1<br/>Real-world data"]] --> B[["Initial Convolution<br/>128 channels<br/>Feature extraction"]]
+        B --> C[["ResNet Block 1<br/>Downsample to 160×160<br/>Multi-scale features"]]
+        C --> D[["ResNet Block 2<br/>Downsample to 80×80<br/>Hierarchical processing"]]
+        D --> E[["Bottleneck Convolution<br/>80×80×3<br/>Latent representation"]]
+    end
+    
+    subgraph "📊 ENCODER MATHEMATICS"
+        F[["Mean Vector μ<br/>80×80×3<br/>Distribution parameters"]] --> G[["Log Variance log(σ²)<br/>80×80×3<br/>Uncertainty modeling"]]
+        G --> H[["Reparameterization<br/>z = μ + σ·ε<br/>Sampling trick"]]
+        H --> I[["Latent Distribution<br/>q_φ(z|x) ~ N(μ, σ²)<br/>Approximate posterior"]]
+    end
+    
+    subgraph "⚡ ENCODER FEATURES"
+        J[["Multi-scale Processing<br/>320→160→80<br/>Progressive compression"]] --> K[["Feature Hierarchy<br/>Low→High level<br/>Semantic abstraction"]]
+        K --> L[["Compression Ratio<br/>16× reduction<br/>Efficient representation"]]
+        L --> M[["Information Bottleneck<br/>Forced compression<br/>Essential features only"]]
+    end
+    
+    E --> F
+    I --> J
+    
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
+    style F fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style J fill:#E8F5E8,stroke:#388E3C,stroke-width:3px

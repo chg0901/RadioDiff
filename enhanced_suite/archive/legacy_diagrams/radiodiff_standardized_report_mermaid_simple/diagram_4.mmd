@@ -1,0 +1,43 @@
+graph TB
+    subgraph "Reconstruction Loss Pipeline"
+        A[Ground Truth<br/>x ∈ ℝ^(320×320×1)] -> B[VAE Reconstruction<br/>x̂ ∈ ℝ^(320×320×1)]
+        B -> C[L1 Loss<br/>|x - x̂|]
+        B -> D[MSE Loss<br/>||x - x̂||²]
+        C -> E[Reconstruction Loss<br/>L_rec = L1 + MSE]
+        D -> E
+    end
+    
+    subgraph "Perceptual Loss Integration"
+        F[Input Images] -> G[LPIPS Network<br/>Pre-trained VGG]
+        H[Reconstructions -> G]
+        G -> I[Feature Space<br/>Comparison]
+        I -> J[Perceptual Distance<br/>L_perceptual]
+        J -> K[Weighted Addition<br/>L_rec + w_p × L_perceptual]
+    end
+    
+    subgraph "KL Divergence Components"
+        L[Encoder Output<br/>μ, σ] -> M[Posterior<br/>q(z|x) = N(μ, σ²)]
+        N[Prior<br/>p(z) = N(0, I)] -> O[KL Divergence<br/>KL[q||p]
+        M -> O
+        O -> P[Batch Mean<br/>L_kl = mean(KL)]
+        P -> Q[Weighted KL<br/>w_kl × L_kl]
+    end
+    
+    subgraph "Adversarial Training Components"
+        R[VAE Generator] -> S[Reconstructions]
+        S -> T[Discriminator]
+        T -> U[Logits: Fake]
+        U -> V[Generator Loss<br/>L_g = -mean(logits_fake)]
+        V -> W[Encourage Realistic<br/>Generations]
+    end
+    
+    style A fill:#e8f5e8]
+    style B fill:#e3f2fd]
+    style E fill:#fff3e0]
+    style G fill:#f3e5f5]
+    style K fill:#ffecb3]
+    style L fill:#bbdefb]
+    style N fill:#c8e6c9]
+    style Q fill:#fff9c4]
+    style R fill:#e1f5fe]
+    style V fill:#ffebee]

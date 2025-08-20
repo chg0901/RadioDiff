@@ -1,0 +1,50 @@
+%% Enhanced Training Configuration - Simplified
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1976d2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#0d47a1', 'lineColor': '#757575', 'secondaryColor': '#388e3c', 'tertiaryColor': '#f57c00', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "🤖 <b><font color=#1976d2>MODEL CONFIGURATION</font></b>"
+        A[<b>Model Type</b><br/>const_sde<br/>Constant SDE diffusion] --> B[<b>Image Size</b><br/>[320, 320]<br/>Radio map resolution]
+        B --> C[<b>Timesteps</b><br/>1000<br/>Diffusion steps]
+        C --> D[<b>Sampling Steps</b><br/>1<br/>Single-step inference]
+        D --> E[<b>Objective</b><br/>pred_KC<br/>Knowledge-aware]
+    end
+    
+    subgraph "🎛️ <b><font color=#388e3c>VAE PARAMETERS</font></b>"
+        F[<b>Embedding Dimension</b><br/>3<br/>Latent space depth] --> G[<b>Z Channels</b><br/>3<br/>Latent channels]
+        G --> H[<b>Resolution</b><br/>320×320<br/>Input size]
+        H --> I[<b>Channels</b><br/>128<br/>Feature dimension]
+        I --> J[<b>Multipliers</b><br/>[1, 2, 4]<br/>Scale factors]
+    end
+    
+    subgraph "🔧 <b><font color=#f57c00>U-NET CONFIGURATION</font></b>"
+        K[<b>Base Dimension</b><br/>128<br/>Feature channels] --> L[<b>Input Channels</b><br/>3<br/>Latent input]
+        L --> M[<b>Dimension Multipliers</b><br/>[1, 2, 4, 4]<br/>Multi-scale]
+        M --> N[<b>Condition Dimension</b><br/>128<br/>Conditioning space]
+        N --> O[<b>Window Sizes</b><br/>[8,8], [4,4], [2,2], [1,1]<br/>Swin attention]
+    end
+    
+    subgraph "⚙️ <b><font color=#d32f2f>TRAINING CONFIGURATION</font></b>"
+        P[<b>Batch Size</b><br/>66<br/>Per GPU] --> Q[<b>Gradient Accumulation</b><br/>8 steps<br/>Effective: 528]
+        Q --> R[<b>Learning Rate</b><br/>5e-5<br/>Initial LR]
+        R --> S[<b>Total Steps</b><br/>50000<br/>Training duration]
+        S --> T[<b>Save Frequency</b><br/>200 steps<br/>Checkpoint interval]
+    end
+    
+    subgraph "📊 <b><font color=#7b1fa2>PERFORMANCE METRICS</font></b>"
+        U[<b>Memory Usage</b><br/>Optimized<br/>Single GPU] --> V[<b>Computational Cost</b><br/>Reduced<br/>Latent compression]
+        V --> W[<b>Inference Speed</b><br/>Real-time<br/>Single-step]
+        W --> X[<b>Quality Metrics</b><br/>RMSE, SSIM, PSNR<br/>Evaluation criteria]
+    end
+    
+    E --> F
+    F --> K
+    K --> P
+    P --> U
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style F fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    style K fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    style P fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style U fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    
+    classDef configParam fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X configParam

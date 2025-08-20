@@ -1,0 +1,45 @@
+%% Enhanced Conditional U-Net Architecture - Simplified
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1976d2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#0d47a1', 'lineColor': '#757575', 'secondaryColor': '#388e3c', 'tertiaryColor': '#f57c00', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "🎛️ <b><font color=#1976d2>CONDITIONAL U-NET INPUT PROCESSING</font></b>"
+        A[<b>Noisy Latent Input</b><br/>x_t in R^(B×3×80×80)<br/>Diffusion timestep t] --> B[<b>Time Embedding</b><br/>sinusoidal(pos)<br/>Positional encoding]
+        B --> C[<b>Condition Integration</b><br/>c in R^(B×3×320×320)<br/>Building layout info]
+        C --> D[<b>Multi-modal Fusion</b><br/>[x_t; t; c]<br/>Concatenated input]
+    end
+    
+    subgraph "🔧 <b><font color=#388e3c>SWIN TRANSFORMER BLOCKS</font></b>"
+        E[<b>Window Attention 1</b><br/>Window: [8,8]<br/>Coarse-grained features] --> F[<b>Window Attention 2</b><br/>Window: [4,4]<br/>Medium-grained features]
+        F --> G[<b>Window Attention 3</b><br/>Window: [2,2]<br/>Fine-grained features]
+        G --> H[<b>Window Attention 4</b><br/>Window: [1,1]<br/>Pixel-level attention]
+    end
+    
+    subgraph "🌊 <b><font color=#f57c00>MULTI-SCALE FEATURE PROCESSING</font></b>"
+        I[<b>Downsampling Path</b><br/>dim_mults: [1,2,4,4]<br/>Feature extraction] --> J[<b>Bottleneck</b><br/>Maximum receptive field<br/>Global context]
+        J --> K[<b>Upsampling Path</b><br/>Skip connections<br/>Detail restoration]
+        K --> L[<b>Multi-scale Output</b><br/>Hierarchical features<br/>Rich representation]
+    end
+    
+    subgraph "📡 <b><font color=#d32f2f>ADAPTIVE FFT MODULE</font></b>"
+        M[<b>Spatial Features</b><br/>Real-space representation<br/>Local patterns] --> N[<b>Fourier Transform</b><br/>F(x) = integral x(t)e^(-iwt)dt<br/>Frequency domain]
+        N --> O[<b>Frequency Processing</b><br/>Scale: 16<br/>Multi-resolution analysis]
+        O --> P[<b>Inverse Fourier</b><br/>F^(-1)(X) = (1/2pi)integral X(w)e^(iwt)dw<br/>Spatial reconstruction]
+    end
+    
+    subgraph "🎯 <b><font color=#7b1fa2>NOISE PREDICTION OUTPUT</font></b>"
+        Q[<b>Feature Integration</b><br/>Spatial + Frequency<br/>Multi-domain fusion] --> R[<b>Noise Prediction Head</b><br/>epsilon_theta(x_t, t, c)<br/>Knowledge-aware]
+        R --> S[<b>Output Dimensions</b><br/>B×3×80×80<br/>Latent space]
+    end
+    
+    D --> E
+    H --> I
+    L --> M
+    P --> Q
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style E fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    style I fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    style M fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style Q fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class B,N,O,P,R mathFormula

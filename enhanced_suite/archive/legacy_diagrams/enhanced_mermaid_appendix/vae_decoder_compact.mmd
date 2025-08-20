@@ -1,0 +1,20 @@
+%% Compact VAE Decoder Architecture - Horizontal Layout
+graph LR
+    A[["🎯 Latent z<br/>80×80×3<br/>Compressed"]] --> B[["🔧 Conv 128<br/>Feature expand"]]
+    B --> C[["📐 ResNet 1<br/>80→160<br/>Upsample"]]
+    C --> D[["📐 ResNet 2<br/>160→320<br/>Upsample"]]
+    D --> E[["📡 Output<br/>320×320×1<br/>Reconstructed"]]
+    
+    F[["🔄 Generation<br/>p_θ(x|z)"]] --> G[["📊 Likelihood<br/>Output model"]]
+    G --> H[["🎯 Decoding<br/>x̂ = Decoder(z)"]]
+    H --> I[["📈 Quality<br/>||x - x̂||²"]]
+    
+    J[["⚡ Progressive<br/>80→160→320"]] --> K[["🔗 Skip Conn<br/>Detail preserve"]]
+    K --> L[["🎯 Physical<br/>Radio constraints"]]
+    
+    E --> F
+    I --> J
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    style J fill:#E8F5E8,stroke:#388E3C,stroke-width:2px

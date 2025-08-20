@@ -1,0 +1,40 @@
+%% Enhanced Diffusion Process - Simplified
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#f57c00', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#e65100', 'lineColor': '#757575', 'secondaryColor': '#7b1fa2', 'tertiaryColor': '#1976d2', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "📈 <b><font color=#f57c00>FORWARD DIFFUSION PROCESS</font></b>"
+        A[<b>Clean Data x_0</b><br/>Radio map<br/>Original distribution] --> B[<b>Noise Schedule beta_t</b><br/>linear: 0.0001 -> 0.02<br/>1000 timesteps]
+        B --> C[<b>Noise Addition</b><br/>epsilon ~ N(0, I)<br/>Gaussian noise]
+        C --> D[<b>Noisy Data x_t</b><br/>x_t = sqrt(alpha_bar_t)x_0 + sqrt(1-alpha_bar_t)epsilon<br/>Forward process]
+        D --> E[<b>Forward Distribution</b><br/>q(x_t|x_0) = N(sqrt(alpha_bar_t)x_0, (1-alpha_bar_t)I)<br/>Conditional Gaussian]
+    end
+    
+    subgraph "🔄 <b><font color=#7b1fa2>REVERSE DIFFUSION PROCESS</font></b>"
+        F[<b>Noisy Input x_t</b><br/>t = T, T-1, ..., 1<br/>Iterative denoising] --> G[<b>Condition Integration</b><br/>c = building layout<br/>Spatial conditioning]
+        G --> H[<b>U-Net Prediction</b><br/>epsilon_theta(x_t, t, c)<br/>Noise estimation]
+        H --> I[<b>Denoising Step</b><br/>x_{t-1} = (x_t - epsilon_theta)/sqrt(alpha_t) + sigma_t z<br/>Reverse process]
+        I --> J[<b>Reverse Distribution</b><br/>p_theta(x_{t-1}|x_t, c) = N(mu_theta, Sigma_theta)<br/>Learned reverse]
+    end
+    
+    subgraph "🎯 <b><font color=#1976d2>KNOWLEDGE-AWARE OBJECTIVE</font></b>"
+        K[<b>Training Objective</b><br/>pred_KC<br/>Radio propagation physics] --> L[<b>Loss Function</b><br/>L_KC = E||epsilon - epsilon_theta(x_t, t, c)||^2<br/>Mean squared error]
+        L --> M[<b>Optimization Target</b><br/>min_theta L_KC<br/>Parameter learning]
+        M --> N[<b>Physics Integration</b><br/>Electromagnetic constraints<br/>Domain knowledge]
+    end
+    
+    subgraph "⚡ <b><font color=#d32f2f>SAMPLING EFFICIENCY</font></b>"
+        O[<b>Traditional Diffusion</b><br/>1000 steps<br/>Slow inference] --> P[<b>RadioDiff Innovation</b><br/>Single-step sampling<br/>Real-time generation]
+        P --> Q[<b>Computational Benefit</b><br/>1000x speedup<br/>Practical deployment]
+        Q --> R[<b>Sampling-Free</b><br/>No field measurements<br/>Cost-effective]
+    end
+    
+    E --> F
+    J --> K
+    N --> O
+    
+    style A fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style K fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style O fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class B,D,E,H,I,J,L,M,N mathFormula

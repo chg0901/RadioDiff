@@ -1,0 +1,46 @@
+%% Enhanced Loss Functions Architecture - 16:9 aspect ratio
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#d32f2f', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#b71c1c', 'lineColor': '#757575', 'secondaryColor': '#7b1fa2', 'tertiaryColor': '#1976d2', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "🔄 <b><font color=#d32f2f>RECONSTRUCTION LOSS PIPELINE</font></b>"
+        A[<b>Ground Truth</b><br/><font color=#666>x ∈ ℝ^(320×320×1)</font><br/><i>Original radio map</i>] --> B[<b>VAE Reconstruction</b><br/><font color=#666>x̂ ∈ ℝ^(320×320×1)</font><br/><i>Generated output</i>]
+        B --> C[<b>L1 Loss</b><br/><font color=#666>ℒ_L1 = |x - x̂|</font><br/><i>Robust to outliers</i>]
+        B --> D[<b>MSE Loss</b><br/><font color=#666>ℒ_MSE = ||x - x̂||²</font><br/><i>Sensitive to errors</i>]
+        C --> E[<b>Reconstruction Loss</b><br/><font color=#666>ℒ_rec = ℒ_L1 + ℒ_MSE</font><br/><i>Combined objective</i>]
+        D --> E
+    end
+    
+    subgraph "🧠 <b><font color=#7b1fa2>PERCEPTUAL LOSS INTEGRATION</font></b>"
+        F[<b>Input Images</b><br/><font color=#666>x, x̂ ∈ ℝ^(320×320×1)</font><br/><i>Original & reconstructed</i>] --> G[<b>LPIPS Network</b><br/><font color=#666>Pre-trained VGG</font><br/><i>Feature extraction</i>]
+        H[<b>Feature Maps</b><br/><font color=#666>φ(x), φ(x̂) ∈ ℝ^D</font><br/><i>Deep representations</i>] --> I[<b>Perceptual Distance</b><br/><font color=#666>ℒ_perceptual = ||φ(x) - φ(x̂)||²</font><br/><i>Human perception</i>]
+        G --> H
+        I --> J[<b>Weighted Addition</b><br/><font color=#666>ℒ_total = ℒ_rec + λ_p·ℒ_perceptual</font><br/><i>Multi-objective</i>]
+    end
+    
+    subgraph "📊 <b><font color=#1976d2>KL DIVERGENCE COMPONENTS</font></b>"
+        K[<b>Encoder Parameters</b><br/><font color=#666>μ_φ(x), σ_φ(x)</font><br/><i>Mean and variance</i>] --> L[<b>Posterior Distribution</b><br/><font color=#666>q(z|x) = 𝒩(μ, σ²𝐈)</font><br/><i>Approximate posterior</i>]
+        M[<b>Prior Distribution</b><br/><font color=#666>p(z) = 𝒩(0, 𝐈)</font><br/><i>Standard normal</i>] --> N[<b>KL Divergence</b><br/><font color=#666>KL[q‖p] = ½∑(μ² + σ² - log(σ²) - 1)</font><br/><i>Information bottleneck</i>]
+        L --> N
+        N --> O[<b>Batch Mean</b><br/><font color=#666>ℒ_KL = 𝔼_B[KL(q‖p)]</font><br/><i>Regularization</i>]
+        O --> P[<b>Weighted KL</b><br/><font color=#666>λ_KL·ℒ_KL</font><br/><i>Trade-off parameter</i>]
+    end
+    
+    subgraph "⚔️ <b><font color=#388e3c>ADVERSARIAL TRAINING</font></b>"
+        Q[<b>VAE Generator</b><br/><font color=#666>G_φ: x → z → x̂</font><br/><i>Reconstruction model</i>] --> R[<b>Generated Samples</b><br/><font color=#666>x̂ = G_φ(x)</font><br/><i>Reconstructed output</i>]
+        R --> S[<b>Discriminator</b><br/><font color=#666>D_ψ: ℝ^(320×320) → [0,1]</font><br/><i>Real vs fake classifier</i>]
+        S --> T[<b>Discriminator Output</b><br/><font color=#666>D_ψ(x̂) ∈ ℝ</font><br/><i>Fake logits</i>]
+        T --> U[<b>Generator Loss</b><br/><font color=#666>ℒ_adv = -𝔼[log(D_ψ(G_φ(x)))]</font><br/><i>Adversarial objective</i>]
+    end
+    
+    E --> J
+    P --> J
+    U --> J
+    
+    %% Style definitions
+    style A fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style K fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style Q fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    
+    %% Mathematical formula styling
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class C,D,E,G,I,N,O,P,S,T,U mathFormula

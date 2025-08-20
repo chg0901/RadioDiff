@@ -1,0 +1,38 @@
+%% Enhanced VAE Architecture Details - Simplified
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#7b1fa2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4a148c', 'lineColor': '#757575', 'secondaryColor': '#0277bd', 'tertiaryColor': '#2e7d32', 'background': '#f5f5f5'}}}%%
+graph LR
+    subgraph "🏗️ <b><font color=#7b1fa2>VAE ENCODER PATH</font></b>"
+        A[<b>Input Image</b><br/><font color=#666>320×320×1</font><br/>Radio map pathloss] --> B[<b>Initial Convolution</b><br/><font color=#666>128 channels</font><br/>Feature extraction]
+        B --> C[<b>ResNet Block 1</b><br/><font color=#666>Downsample to 160×160</font><br/>Multi-scale features]
+        C --> D[<b>ResNet Block 2</b><br/><font color=#666>Downsample to 80×80</font><br/>Hierarchical processing]
+        D --> E[<b>Bottleneck Layer</b><br/><font color=#666>80×80×3 latent space</font><br/>Compressed representation]
+    end
+    
+    subgraph "🔄 <b><font color=#0277bd>VAE DECODER PATH</font></b>"
+        F[<b>Latent Input</b><br/><font color=#666>80×80×3</font><br/>Compressed features] --> G[<b>ResNet Block 1</b><br/><font color=#666>Upsample to 160×160</font><br/>Feature expansion]
+        G --> H[<b>ResNet Block 2</b><br/><font color=#666>Upsample to 320×320</font><br/>Spatial restoration]
+        H --> I[<b>Final Convolution</b><br/><font color=#666>1 channel output</font><br/>Reconstruction]
+    end
+    
+    subgraph "📊 <b><font color=#2e7d32>VAE MATHEMATICAL FOUNDATION</font></b>"
+        J[<b>Encoder Distribution</b><br/>q_phi(z|x) = N(mu_phi(x), sigma_phi(x)I)] --> K[<b>Latent Space Regularization</b><br/>KL[q_phi(z|x)||p(z)]]
+        K --> L[<b>Decoder Distribution</b><br/>p_theta(x|z) = N(mu_theta(z), sigma^2 I)]
+        L --> M[<b>ELBO Objective</b><br/>max E[log p_theta(x|z)] - KL[q||p]]
+    end
+    
+    subgraph "⚖️ <b><font color=#d32f2f>VAE LOSS COMPONENTS</font></b>"
+        N[<b>Reconstruction Loss</b><br/>L_rec = ||x - x_hat||^2] --> O[<b>KL Divergence</b><br/>L_KL = KL[q_phi(z|x)||p(z)]]
+        O --> P[<b>Total VAE Loss</b><br/>L_VAE = L_rec + beta·L_KL]
+    end
+    
+    E --> F
+    J --> K
+    N --> O
+    
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style F fill:#E3F2FD,stroke:#0277BD,stroke-width:3px,color:#000000
+    style J fill:#E8F5E8,stroke:#2E7D32,stroke-width:3px,color:#000000
+    style N fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class J,K,L,M,N,O,P mathFormula

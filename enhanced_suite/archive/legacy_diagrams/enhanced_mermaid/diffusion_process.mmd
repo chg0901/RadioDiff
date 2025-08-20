@@ -1,0 +1,42 @@
+%% Enhanced Diffusion Process - 16:9 aspect ratio
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#f57c00', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#e65100', 'lineColor': '#757575', 'secondaryColor': '#7b1fa2', 'tertiaryColor': '#1976d2', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "📈 <b><font color=#f57c00>FORWARD DIFFUSION PROCESS</font></b>"
+        A[<b>Clean Data x₀</b><br/><font color=#666>Radio map</font><br/><i>Original distribution</i>] --> B[<b>Noise Schedule βₜ</b><br/><font color=#666>linear: 0.0001 → 0.02</font><br/><i>1000 timesteps</i>]
+        B --> C[<b>Noise Addition</b><br/><font color=#666>ε ~ 𝒩(0, 𝐈)</font><br/><i>Gaussian noise</i>]
+        C --> D[<b>Noisy Data xₜ</b><br/><font color=#666>xₜ = √ᾱₜx₀ + √(1-ᾱₜ)ε</font><br/><i>Forward process</i>]
+        D --> E[<b>Forward Distribution</b><br/><font color=#666>q(xₜ|x₀) = 𝒩(√ᾱₜx₀, (1-ᾱₜ)𝐈)</font><br/><i>Conditional Gaussian</i>]
+    end
+    
+    subgraph "🔄 <b><font color=#7b1fa2>REVERSE DIFFUSION PROCESS</font></b>"
+        F[<b>Noisy Input xₜ</b><br/><font color=#666>t = T, T-1, ..., 1</font><br/><i>Iterative denoising</i>] --> G[<b>Condition Integration</b><br/><font color=#666>c = building layout</font><br/><i>Spatial conditioning</i>]
+        G --> H[<b>U-Net Prediction</b><br/><font color=#666>ε_θ(xₜ, t, c)</font><br/><i>Noise estimation</i>]
+        H --> I[<b>Denoising Step</b><br/><font color=#666>xₜ₋₁ = (xₜ - ε_θ)/√αₜ + σₜz</font><br/><i>Reverse process</i>]
+        I --> J[<b>Reverse Distribution</b><br/><font color=#666>p_θ(xₜ₋₁|xₜ, c) = 𝒩(μ_θ, Σ_θ)</font><br/><i>Learned reverse</i>]
+    end
+    
+    subgraph "🎯 <b><font color=#1976d2>KNOWLEDGE-AWARE OBJECTIVE</font></b>"
+        K[<b>Training Objective</b><br/><font color=#666>pred_KC</font><br/><i>Radio propagation physics</i>] --> L[<b>Loss Function</b><br/><font color=#666>ℒ_KC = 𝔼||ε - ε_θ(xₜ, t, c)||²</font><br/><i>Mean squared error</i>]
+        L --> M[<b>Optimization Target</b><br/><font color=#666>min_θ ℒ_KC</font><br/><i>Parameter learning</i>]
+        M --> N[<b>Physics Integration</b><br/><font color=#666>Electromagnetic constraints</font><br/><i>Domain knowledge</i>]
+    end
+    
+    subgraph "⚡ <b><font color=#d32f2f>SAMPLING EFFICIENCY</font></b>"
+        O[<b>Traditional Diffusion</b><br/><font color=#666>1000 steps</font><br/><i>Slow inference</i>] --> P[<b>RadioDiff Innovation</b><br/><font color=#666>Single-step sampling</font><br/><i>Real-time generation</i>]
+        P --> Q[<b>Computational Benefit</b><br/><font color=#666>1000× speedup</font><br/><i>Practical deployment</i>]
+        Q --> R[<b>Sampling-Free</b><br/><font color=#666>No field measurements</font><br/><i>Cost-effective</i>]
+    end
+    
+    E --> F
+    J --> K
+    N --> O
+    
+    %% Style definitions
+    style A fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style K fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style O fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    
+    %% Mathematical formula styling
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class B,D,E,H,I,J,L,M,N mathFormula

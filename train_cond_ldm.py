@@ -24,37 +24,37 @@ import os
 import yaml
 
 
-acconfig = {
-    'compute_environment': 'LOCAL_MACHINE',
-    'debug': False,
-    'distributed_type': 'NO',
-    'downcast_bf16': 'no',
-    'enable_cpu_affinity': True,
-    'gpu_ids': '3',  #直接改这个
-    'machine_rank': 0,
-    'main_training_function': 'main',
-    'mixed_precision': 'no',
-    'num_machines': 1,
-    'num_processes': 1,
-    'rdzv_backend': 'static',
-    'same_network': True,
-    'tpu_env': [],
-    'tpu_use_cluster': False,
-    'tpu_use_sudo': False,
-    'use_cpu': False,
-}
+# acconfig = {
+#     'compute_environment': 'LOCAL_MACHINE',
+#     'debug': False,
+#     'distributed_type': 'NO',
+#     'downcast_bf16': 'no',
+#     'enable_cpu_affinity': True,
+#     'gpu_ids': '3',  #直接改这个
+#     'machine_rank': 0,
+#     'main_training_function': 'main',
+#     'mixed_precision': 'no',
+#     'num_machines': 1,
+#     'num_processes': 1,
+#     'rdzv_backend': 'static',
+#     'same_network': True,
+#     'tpu_env': [],
+#     'tpu_use_cluster': False,
+#     'tpu_use_sudo': False,
+#     'use_cpu': False,
+# }
 
-# 设置配置文件路径
-config_dir = os.path.expanduser('/home/zhangqiming/.cache/huggingface/accelerate')
-os.makedirs(config_dir, exist_ok=True)
+# # 设置配置文件路径
+# config_dir = os.path.expanduser('/home/zhangqiming/.cache/huggingface/accelerate')
+# os.makedirs(config_dir, exist_ok=True)
 
-config_path = os.path.join(config_dir, 'default_config.yaml')
+# config_path = os.path.join(config_dir, 'default_config.yaml')
 
-# 写入 YAML 文件
-with open(config_path, 'w') as f:
-    yaml.dump(acconfig, f)
+# # 写入 YAML 文件
+# with open(config_path, 'w') as f:
+#     yaml.dump(acconfig, f)
 
-print(f"配置写入成功：{config_path}")
+# print(f"配置写入成功：{config_path}")
 
 
 
@@ -376,6 +376,13 @@ class Trainer(object):
         resume_file = str(self.results_folder / f'model-{resume_milestone}.pt')
         if os.path.isfile(resume_file):
             self.load(resume_milestone)
+            print(f"Successfully resumed training from milestone {resume_milestone}")
+        elif resume_milestone > 0:
+            print(f"Warning: Resume milestone {resume_milestone} specified but checkpoint file {resume_file} not found.")
+            print("Starting training from scratch instead.")
+            self.step = 0
+        else:
+            print("Starting fresh training (resume_milestone = 0)")
 
     def save(self, milestone):
         if not self.accelerator.is_local_main_process:
@@ -402,22 +409,326 @@ class Trainer(object):
         accelerator = self.accelerator
         device = accelerator.device
 
-        data = torch.load(str(self.results_folder / f'model-{milestone}.pt'),
-                          map_location=lambda storage, loc: storage)
+        print(f"Loading checkpoint from milestone {milestone}...")
+        checkpoint_path = str(self.results_folder / f'model-{milestone}.pt')
+        
+        if not os.path.exists(checkpoint_path):
+            raise FileNotFoundError(f"Checkpoint file not found: {checkpoint_path}")
+        
+        # Load checkpoint with error handling
+        try:
+            data = torch.load(checkpoint_path, map_location=lambda storage, loc: storage)
+            print(f"Successfully loaded checkpoint with keys: {list(data.keys())}")
+        except Exception as e:
+            raise RuntimeError(f"Failed to load checkpoint: {e}")
 
+        # Validate checkpoint structure
+        required_keys = ['step', 'model', 'opt', 'lr_scheduler']
+        missing_keys = [key for key in required_keys if key not in data]
+        if missing_keys:
+            raise ValueError(f"Checkpoint missing required keys: {missing_keys}")
+
+        # Load model state with comprehensive validation
         model = self.accelerator.unwrap_model(self.model)
-        model.load_state_dict(data['model'])
-        if 'scale_factor' in data['model']:
-            model.scale_factor = data['model']['scale_factor']
+        
+        # Store original scale factor for comparison
+        original_scale_factor = getattr(model, 'scale_factor', None)
+        
+        try:
+            # Load model state
+            model.load_state_dict(data['model'], strict=False)
+            print("Model state loaded successfully")
+            
+            # Properly restore scale factor if it exists
+            if 'scale_factor' in data['model']:
+                scale_factor = data['model']['scale_factor']
+                if isinstance(scale_factor, torch.Tensor):
+                    scale_factor = scale_factor.to(device)
+                
+                # Try to set scale factor as parameter/buffer
+                if hasattr(model, 'scale_factor'):
+                    if isinstance(model.scale_factor, torch.nn.Parameter):
+                        model.scale_factor.data = scale_factor if isinstance(scale_factor, torch.Tensor) else torch.tensor(scale_factor, device=device)
+                    else:
+                        model.scale_factor = scale_factor
+                else:
+                    # Register as buffer if it doesn't exist
+                    model.register_buffer('scale_factor', scale_factor if isinstance(scale_factor, torch.Tensor) else torch.tensor(scale_factor, device=device))
+                
+                print(f"Scale factor restored: {model.scale_factor}")
+            elif original_scale_factor is not None:
+                print(f"Using original scale factor: {original_scale_factor}")
+            else:
+                print("Warning: No scale factor found in checkpoint or model")
+                
+        except Exception as e:
+            raise RuntimeError(f"Failed to load model state: {e}")
 
-        self.step = data['step']
-        self.opt.load_state_dict(data['opt'])
-        self.lr_scheduler.load_state_dict(data['lr_scheduler'])
+        # Validate model parameters for NaN/Inf
+        self._validate_model_parameters(model)
+
+        # Load optimizer state
+        try:
+            self.opt.load_state_dict(data['opt'])
+            print("Optimizer state loaded successfully")
+        except Exception as e:
+            print(f"Warning: Failed to load optimizer state: {e}")
+            print("Continuing with fresh optimizer")
+
+        # Load learning rate scheduler state
+        try:
+            self.lr_scheduler.load_state_dict(data['lr_scheduler'])
+            print("LR scheduler state loaded successfully")
+        except Exception as e:
+            print(f"Warning: Failed to load LR scheduler state: {e}")
+
+        # Load EMA state
         if self.accelerator.is_main_process:
-            self.ema.load_state_dict(data['ema'])
+            try:
+                self.ema.load_state_dict(data['ema'])
+                print("EMA state loaded successfully")
+            except Exception as e:
+                print(f"Warning: Failed to load EMA state: {e}")
 
-        if exists(self.accelerator.scaler) and exists(data['scaler']):
-            self.accelerator.scaler.load_state_dict(data['scaler'])
+        # Load gradient scaler state for mixed precision
+        if exists(self.accelerator.scaler) and exists(data.get('scaler')):
+            try:
+                self.accelerator.scaler.load_state_dict(data['scaler'])
+                print("Gradient scaler state loaded successfully")
+            except Exception as e:
+                print(f"Warning: Failed to load gradient scaler state: {e}")
+
+        # Restore step counter
+        self.step = data['step']
+        print(f"Training step restored: {self.step}")
+        
+        # Final validation
+        self._validate_training_state()
+        print(f"Checkpoint loading completed successfully for milestone {milestone}")
+
+    def _validate_model_parameters(self, model):
+        """Validate model parameters for NaN/Inf values"""
+        nan_count = 0
+        inf_count = 0
+        total_params = 0
+        
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                total_params += 1
+                if torch.isnan(param.data).any():
+                    nan_count += 1
+                    print(f"Warning: NaN detected in parameter {name}")
+                if torch.isinf(param.data).any():
+                    inf_count += 1
+                    print(f"Warning: Inf detected in parameter {name}")
+        
+        print(f"Parameter validation: {total_params} total, {nan_count} NaN, {inf_count} Inf")
+        
+        if nan_count > 0 or inf_count > 0:
+            print("Warning: Model contains NaN/Inf parameters - this may cause training instability")
+
+    def _validate_training_state(self):
+        """Validate the overall training state"""
+        # Check learning rate
+        current_lr = self.opt.param_groups[0]['lr']
+        if torch.isnan(torch.tensor(current_lr)) or current_lr <= 0:
+            print(f"Warning: Invalid learning rate: {current_lr}")
+        
+        # Check model outputs with dummy data
+        try:
+            model = self.accelerator.unwrap_model(self.model)
+            model.eval()
+            
+            # Create dummy input for validation
+            dummy_batch_size = 2
+            dummy_shape = (dummy_batch_size, 3, 80, 80)  # Adjust based on your model input
+            dummy_input = torch.randn(dummy_shape, device=self.accelerator.device)
+            dummy_cond = torch.randn(dummy_batch_size, 3, 80, 80, device=self.accelerator.device)
+            dummy_t = torch.rand(dummy_batch_size, device=self.accelerator.device)
+            
+            with torch.no_grad():
+                # Test model forward pass
+                if hasattr(model, 'module'):
+                    output = model.module(dummy_input, dummy_t, cond=dummy_cond)
+                else:
+                    output = model(dummy_input, dummy_t, cond=dummy_cond)
+                
+                if isinstance(output, tuple) and len(output) >= 2:
+                    c_pred, noise_pred = output[:2]
+                    if torch.isnan(c_pred).any() or torch.isnan(noise_pred).any():
+                        print("Warning: Model produces NaN outputs during validation")
+                    else:
+                        print("Model validation passed - no NaN outputs")
+                else:
+                    print("Warning: Unexpected model output format")
+            
+            model.train()
+        except Exception as e:
+            print(f"Warning: Model validation failed: {e}")
+
+    def _validate_batch_data(self, batch):
+        """Validate batch data for NaN/Inf values"""
+        for key, value in batch.items():
+            if isinstance(value, torch.Tensor):
+                if torch.isnan(value).any():
+                    print(f"Warning: NaN detected in batch[{key}] at step {self.step}")
+                if torch.isinf(value).any():
+                    print(f"Warning: Inf detected in batch[{key}] at step {self.step}")
+                
+                # Check for extreme values
+                if torch.abs(value).max() > 1e6:
+                    print(f"Warning: Extreme values in batch[{key}] at step {self.step}: max={torch.abs(value).max()}")
+
+    def _detect_training_issues(self, loss, log_dict, batch):
+        """Comprehensive detection of training issues"""
+        issues_detected = False
+        
+        # Check loss for NaN/Inf
+        if torch.isnan(loss):
+            print(f"CRITICAL: NaN loss detected at step {self.step}")
+            print(f"  Loss value: {loss}")
+            print(f"  Batch keys: {list(batch.keys())}")
+            issues_detected = True
+        elif torch.isinf(loss):
+            print(f"CRITICAL: Inf loss detected at step {self.step}")
+            print(f"  Loss value: {loss}")
+            issues_detected = True
+        elif loss > 1000.0:  # Arbitrary large threshold
+            print(f"WARNING: Extremely large loss at step {self.step}: {loss}")
+        
+        # Check log_dict components
+        for key, value in log_dict.items():
+            if isinstance(value, (torch.Tensor, float, int)):
+                if torch.isnan(torch.tensor(value)):
+                    print(f"WARNING: NaN in log_dict[{key}] at step {self.step}: {value}")
+                elif torch.isinf(torch.tensor(value)):
+                    print(f"WARNING: Inf in log_dict[{key}] at step {self.step}: {value}")
+        
+        # Check model parameters periodically
+        if self.step % 1000 == 0:
+            self._validate_model_parameters(self.accelerator.unwrap_model(self.model))
+        
+        return issues_detected
+
+    def _log_debug_info(self, loss, log_dict, batch):
+        """Log detailed debug information"""
+        debug_info = {
+            'step': self.step,
+            'loss': loss.item() if torch.is_tensor(loss) else loss,
+            'lr': self.opt.param_groups[0]['lr'],
+        }
+        
+        # Add batch statistics
+        for key, value in batch.items():
+            if isinstance(value, torch.Tensor):
+                debug_info[f'batch_{key}_mean'] = value.mean().item()
+                debug_info[f'batch_{key}_std'] = value.std().item()
+                debug_info[f'batch_{key}_min'] = value.min().item()
+                debug_info[f'batch_{key}_max'] = value.max().item()
+        
+        # Add loss components
+        for key, value in log_dict.items():
+            if isinstance(value, (torch.Tensor, float, int)):
+                debug_info[f'log_{key}'] = value.item() if torch.is_tensor(value) else value
+        
+        # Log to tensorboard
+        if hasattr(self, 'writer'):
+            for key, value in debug_info.items():
+                if isinstance(value, (int, float)):
+                    self.writer.add_scalar(f'debug/{key}', value, self.step)
+        
+        # Print summary periodically
+        if self.step % 1000 == 0:
+            print(f"Debug Info Step {self.step}:")
+            print(f"  Loss: {debug_info['loss']:.6f}")
+            print(f"  LR: {debug_info['lr']:.2e}")
+            for key, value in debug_info.items():
+                if key.startswith('batch_') and key.endswith('_mean'):
+                    print(f"  {key}: {value:.6f}")
+
+    def _apply_gradient_stability_measures(self):
+        """Apply comprehensive gradient stability measures"""
+        model = self.model
+        
+        # Get parameters with gradients
+        params_with_grad = [p for p in model.parameters() if p.grad is not None]
+        
+        if not params_with_grad:
+            return 0.0
+        
+        # Check for NaN/Inf gradients before clipping
+        nan_grad_count = 0
+        inf_grad_count = 0
+        
+        for param in params_with_grad:
+            if torch.isnan(param.grad).any():
+                nan_grad_count += 1
+                print(f"Warning: NaN gradients detected in parameter at step {self.step}")
+                # Zero out NaN gradients
+                param.grad[torch.isnan(param.grad)] = 0.0
+            
+            if torch.isinf(param.grad).any():
+                inf_grad_count += 1
+                print(f"Warning: Inf gradients detected in parameter at step {self.step}")
+                # Zero out Inf gradients
+                param.grad[torch.isinf(param.grad)] = 0.0
+        
+        if nan_grad_count > 0 or inf_grad_count > 0:
+            print(f"Gradient issues detected: {nan_grad_count} NaN, {inf_grad_count} Inf")
+        
+        # Apply gradient clipping with adaptive threshold
+        max_norm = 1.0  # Base threshold
+        grad_norm = torch.nn.utils.clip_grad_norm_(
+            params_with_grad, 
+            max_norm=max_norm,
+            norm_type=2.0
+        )
+        
+        # Additional gradient scaling for stability
+        if grad_norm > max_norm * 0.8:  # If we're close to clipping
+            # Apply additional scaling
+            scale_factor = max_norm / (grad_norm + 1e-8)
+            for param in params_with_grad:
+                param.grad.mul_(scale_factor)
+            print(f"Applied additional gradient scaling: {scale_factor:.4f}")
+        
+        # Log gradient statistics
+        if self.step % 1000 == 0:
+            self._log_gradient_statistics(params_with_grad, grad_norm)
+        
+        return grad_norm.item() if torch.is_tensor(grad_norm) else grad_norm
+
+    def _log_gradient_statistics(self, params_with_grad, grad_norm):
+        """Log detailed gradient statistics"""
+        if not params_with_grad:
+            return
+        
+        # Compute gradient statistics
+        grad_norms = []
+        grad_means = []
+        grad_stds = []
+        
+        for param in params_with_grad:
+            if param.grad is not None:
+                grad_flat = param.grad.flatten()
+                grad_norms.append(torch.norm(grad_flat).item())
+                grad_means.append(grad_flat.mean().item())
+                grad_stds.append(grad_flat.std().item())
+        
+        if grad_norms:
+            print(f"Gradient Statistics at step {self.step}:")
+            print(f"  Total grad norm: {grad_norm.item() if torch.is_tensor(grad_norm) else grad_norm:.6f}")
+            print(f"  Mean grad norm: {np.mean(grad_norms):.6f}")
+            print(f"  Max grad norm: {np.max(grad_norms):.6f}")
+            print(f"  Mean grad mean: {np.mean(grad_means):.6f}")
+            print(f"  Mean grad std: {np.mean(grad_stds):.6f}")
+        
+        # Log to tensorboard
+        if hasattr(self, 'writer'):
+            self.writer.add_scalar('gradients/total_norm', grad_norm.item() if torch.is_tensor(grad_norm) else grad_norm, self.step)
+            if grad_norms:
+                self.writer.add_scalar('gradients/mean_norm', np.mean(grad_norms), self.step)
+                self.writer.add_scalar('gradients/max_norm', np.max(grad_norms), self.step)
 
     def train(self):
         accelerator = self.accelerator
@@ -433,7 +744,7 @@ class Trainer(object):
                     batch = next(self.dl)
                     for key in batch.keys():
                         if isinstance(batch[key], torch.Tensor):
-                            batch[key].to(device)
+                            batch[key] = batch[key].to(device)
                     if self.step == 0 and ga_ind == 0:
                         if isinstance(self.model, nn.parallel.DistributedDataParallel):
                             self.model.module.on_train_batch_start(batch)
@@ -441,21 +752,41 @@ class Trainer(object):
                             self.model.on_train_batch_start(batch)
 
                     with self.accelerator.autocast():
+                        # Validate input data
+                        self._validate_batch_data(batch)
+                        
                         if isinstance(self.model, nn.parallel.DistributedDataParallel):
                             loss, log_dict = self.model.module.training_step(batch)
                         else:
                             loss, log_dict = self.model.training_step(batch)
-
+                        
+                        # Comprehensive NaN/Inf detection
+                        if self._detect_training_issues(loss, log_dict, batch):
+                            # Skip this batch if issues detected
+                            continue
+                            
                         loss = loss / self.gradient_accumulate_every
                         total_loss += loss.item()
-
-                        loss_simple = log_dict["train/loss_simple"] / self.gradient_accumulate_every
-                        loss_vlb = log_dict["train/loss_vlb"] / self.gradient_accumulate_every
+                        
+                        # Process loss components with NaN handling
+                        loss_simple = log_dict.get("train/loss_simple", 0.0) / self.gradient_accumulate_every
+                        loss_vlb = log_dict.get("train/loss_vlb", 0.0) / self.gradient_accumulate_every
+                        
+                        # Robust NaN handling for loss components
+                        if torch.isnan(torch.tensor(loss_simple)) or torch.isinf(torch.tensor(loss_simple)):
+                            print(f"Warning: Invalid loss_simple at step {self.step}: {loss_simple}")
+                            loss_simple = 0.0
+                        if torch.isnan(torch.tensor(loss_vlb)) or torch.isinf(torch.tensor(loss_vlb)):
+                            print(f"Warning: Invalid loss_vlb at step {self.step}: {loss_vlb}")
+                            loss_vlb = 0.0
+                            
                         total_loss_dict['loss_simple'] += loss_simple
                         total_loss_dict['loss_vlb'] += loss_vlb
                         total_loss_dict['total_loss'] += total_loss
-                        # total_loss_dict['s_fact'] = self.model.module.scale_factor
-                        # total_loss_dict['s_bias'] = self.model.module.scale_bias
+                        
+                        # Log additional metrics for debugging
+                        if self.step % 100 == 0:
+                            self._log_debug_info(loss, log_dict, batch)
 
                     self.accelerator.backward(loss)
                 total_loss_dict['lr'] = self.opt.param_groups[0]['lr']
@@ -470,7 +801,8 @@ class Trainer(object):
                         # self.logger.info(pbar.__str__())
                         self.logger.info(describtions)
 
-                accelerator.clip_grad_norm_(filter(lambda p: p.requires_grad, self.model.parameters()), 1.0)
+                # Enhanced gradient handling with multiple stability measures
+                grad_norm = self._apply_gradient_stability_measures()
                 # pbar.set_description(f'loss: {total_loss:.4f}')
                 accelerator.wait_for_everyone()
 

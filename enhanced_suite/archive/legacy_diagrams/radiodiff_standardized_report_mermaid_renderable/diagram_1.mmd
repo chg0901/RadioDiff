@@ -1,0 +1,38 @@
+graph TB
+    subgraph "Input Data Pipeline"
+        A[RadioMapSeer Dataset] --> B[RadioUNet_c Loader]
+        B --> C[Gradient Accumulation]
+        C --> D[Input Tensors]
+    end
+    
+    subgraph "VAE Encoder"
+        E[AutoencoderKL] --> F[Encoder]
+        F --> G[Latent Space]
+        G --> H[Compression]
+    end
+    
+    subgraph "Conditional U-Net"
+        I[Conditional U-Net] --> J[Time Embedding]
+        J --> K[Condition Integration]
+        K --> L[Multi-scale Features]
+        L --> M[Adaptive FFT]
+        M --> N[Noise Prediction]
+    end
+    
+    subgraph "Diffusion Process"
+        O[Forward Diffusion] --> P[Noise Schedule]
+        P --> Q[Reverse Process]
+        Q --> R[Knowledge-Aware]
+    end
+    
+    subgraph "Training Loop"
+        S[L2 Loss] --> T[Backpropagation]
+        T --> U[AdamW Optimizer]
+        U --> V[LR Schedule]
+        V --> W[EMA Update]
+    end
+    
+    D --> E
+    G --> I
+    N --> S
+    R --> S

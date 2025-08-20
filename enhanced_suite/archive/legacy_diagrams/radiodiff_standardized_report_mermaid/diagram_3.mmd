@@ -1,0 +1,43 @@
+flowchart TD
+    subgraph "📂 Data Loading"
+        A[RadioMapSeer Dataset<br/>Real-world Radio Maps] --> B[RadioUNet_c Loader<br/>DPM Simulation]
+        B --> C[Batch Creation<br/>batch_size: 66]
+        C --> D[Data Augmentation<br/>Horizontal Flip]
+    end
+    
+    subgraph "🔧 Input Processing"
+        E[Image: 320×320×1<br/>Radio Map] --> F[Normalization<br/>[-1, 1]]
+        G[Condition: 320×320×3<br/>Building Info] --> H[Multi-channel Encoding]
+        I[Mask: Optional<br/>320×320×1] --> J[Binary Processing]
+    end
+    
+    subgraph "📦 Batch Structure"
+        K[Batch Dictionary] --> L[image: B×1×320×320<br/>Pathloss Values]
+        K --> M[cond: B×3×320×320<br/>Building Layout]
+        K --> N[ori_mask: B×1×320×320<br/>Spatial Mask]
+        K --> O[img_name: List[str]<br/>Metadata]
+    end
+    
+    subgraph "🎯 Forward Pass"
+        P[VAE Encoder] --> Q[Latent Representation<br/>B×3×80×80]
+        Q --> R[Conditional U-Net<br/>Noise Prediction]
+        R --> S[Loss Computation<br/>L2 Distance]
+    end
+    
+    A --> B
+    D --> E
+    D --> G
+    D --> I
+    F --> L
+    H --> M
+    J --> N
+    L --> K
+    M --> K
+    N --> K
+    K --> P
+    Q --> R
+    
+    style A fill:#E8F5E8
+    style K fill:#FFF3E0
+    style P fill:#E3F2FD
+    style S fill:#FCE4EC

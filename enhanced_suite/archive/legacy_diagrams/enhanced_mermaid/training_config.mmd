@@ -1,0 +1,52 @@
+%% Enhanced Training Configuration - 16:9 aspect ratio
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1976d2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#0d47a1', 'lineColor': '#757575', 'secondaryColor': '#388e3c', 'tertiaryColor': '#f57c00', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "🤖 <b><font color=#1976d2>MODEL CONFIGURATION</font></b>"
+        A[<b>Model Type</b><br/><font color=#666>const_sde</font><br/><i>Constant SDE diffusion</i>] --> B[<b>Image Size</b><br/><font color=#666>[320, 320]</font><br/><i>Radio map resolution</i>]
+        B --> C[<b>Timesteps</b><br/><font color=#666>1000</font><br/><i>Diffusion steps</i>]
+        C --> D[<b>Sampling Steps</b><br/><font color=#666>1</font><br/><i>Single-step inference</i>]
+        D --> E[<b>Objective</b><br/><font color=#666>pred_KC</font><br/><i>Knowledge-aware</i>]
+    end
+    
+    subgraph "🎛️ <b><font color=#388e3c>VAE PARAMETERS</font></b>"
+        F[<b>Embedding Dimension</b><br/><font color=#666>3</font><br/><i>Latent space depth</i>] --> G[<b>Z Channels</b><br/><font color=#666>3</font><br/><i>Latent channels</i>]
+        G --> H[<b>Resolution</b><br/><font color=#666>320×320</font><br/><i>Input size</i>]
+        H --> I[<b>Channels</b><br/><font color=#666>128</font><br/><i>Feature dimension</i>]
+        I --> J[<b>Multipliers</b><br/><font color=#666>[1, 2, 4]</font><br/><i>Scale factors</i>]
+    end
+    
+    subgraph "🔧 <b><font color=#f57c00>U-NET CONFIGURATION</font></b>"
+        K[<b>Base Dimension</b><br/><font color=#666>128</font><br/><i>Feature channels</i>] --> L[<b>Input Channels</b><br/><font color=#666>3</font><br/><i>Latent input</i>]
+        L --> M[<b>Dimension Multipliers</b><br/><font color=#666>[1, 2, 4, 4]</font><br/><i>Multi-scale</i>]
+        M --> N[<b>Condition Dimension</b><br/><font color=#666>128</font><br/><i>Conditioning space</i>]
+        N --> O[<b>Window Sizes</b><br/><font color=#666>[8,8], [4,4], [2,2], [1,1]</font><br/><i>Swin attention</i>]
+    end
+    
+    subgraph "⚙️ <b><font color=#d32f2f>TRAINING CONFIGURATION</font></b>"
+        P[<b>Batch Size</b><br/><font color=#666>66</font><br/><i>Per GPU</i>] --> Q[<b>Gradient Accumulation</b><br/><font color=#666>8 steps</font><br/><i>Effective: 528</i>]
+        Q --> R[<b>Learning Rate</b><br/><font color=#666>5e-5</font><br/><i>Initial LR</i>]
+        R --> S[<b>Total Steps</b><br/><font color=#666>50000</font><br/><i>Training duration</i>]
+        S --> T[<b>Save Frequency</b><br/><font color=#666>200 steps</font><br/><i>Checkpoint interval</i>]
+    end
+    
+    subgraph "📊 <b><font color=#7b1fa2>PERFORMANCE METRICS</font></b>"
+        U[<b>Memory Usage</b><br/><font color=#666>Optimized</font><br/><i>Single GPU</i>] --> V[<b>Computational Cost</b><br/><font color=#666>Reduced</font><br/><i>Latent compression</i>]
+        V --> W[<b>Inference Speed</b><br/><font color=#666>Real-time</font><br/><i>Single-step</i>]
+        W --> X[<b>Quality Metrics</b><br/><font color=#666>RMSE, SSIM, PSNR</font><br/><i>Evaluation criteria</i>]
+    end
+    
+    E --> F
+    F --> K
+    K --> P
+    P --> U
+    
+    %% Style definitions
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style F fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    style K fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    style P fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style U fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    
+    %% Configuration parameter styling
+    classDef configParam fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X configParam

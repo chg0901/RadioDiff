@@ -1,0 +1,49 @@
+%% Enhanced Optimization Strategy - Simplified
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#7b1fa2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4a148c', 'lineColor': '#757575', 'secondaryColor': '#1976d2', 'tertiaryColor': '#388e3c', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "📈 <b><font color=#7b1fa2>COSINE DECAY SCHEDULE</font></b>"
+        A[<b>Initial Learning Rate</b><br/>eta_0 = 5×10^-5<br/>Starting value] --> B[<b>Warmup Phase</b><br/>Optional<br/>Gradual increase]
+        B --> C[<b>Decay Function</b><br/>eta(t) = eta_0 × max(eta_min/eta_0, (1-t/T)^0.96)<br/>Cosine annealing]
+        C --> D[<b>Minimum Learning Rate</b><br/>eta_min = 5×10^-6<br/>Floor value]
+        D --> E[<b>Total Training Steps</b><br/>T = 50,000<br/>Training duration]
+    end
+    
+    subgraph "🔧 <b><font color=#1976d2>OPTIMIZATION PARAMETERS</font></b>"
+        F[<b>Optimizer Choice</b><br/>AdamW<br/>Adam with weight decay] --> G[<b>Weight Decay</b><br/>lambda = 1×10^-4<br/>L2 regularization]
+        G --> H[<b>Gradient Clipping</b><br/>max_norm = 1.0<br/>Stability constraint]
+        H --> I[<b>Gradient Accumulation</b><br/>8 steps<br/>Effective batch: 528]
+        I --> J[<b>Mixed Precision</b><br/>FP16<br/>Memory efficiency]
+    end
+    
+    subgraph "🎯 <b><font color=#388e3c>MODEL REGULARIZATION</font></b>"
+        K[<b>EMA Update</b><br/>Exponential Moving Average<br/>Weight smoothing] --> L[<b>EMA Beta</b><br/>beta = 0.999<br/>Smoothing factor]
+        L --> M[<b>EMA Start Step</b><br/>10,000 steps<br/>After warmup]
+        M --> N[<b>Update Frequency</b><br/>Every 10 steps<br/>Regular updates]
+        N --> O[<b>EMA Benefits</b><br/>Stable convergence<br/>Better generalization]
+    end
+    
+    subgraph "📊 <b><font color=#d32f2f>CONVERGENCE MONITORING</font></b>"
+        P[<b>Loss Tracking</b><br/>Training & validation<br/>Performance metrics] --> Q[<b>Gradient Statistics</b><br/>Norm, variance<br/>Training health]
+        Q --> R[<b>Learning Rate Adjustment</b><br/>Dynamic scheduling<br/>Adaptive optimization]
+        R --> S[<b>Early Stopping</b><br/>Patience monitoring<br/>Prevent overfitting]
+    end
+    
+    subgraph "⚡ <b><font color=#f57c00>MEMORY OPTIMIZATION</font></b>"
+        T[<b>Checkpoint Strategy</b><br/>Save every 200 steps<br/>Progress saving] --> U[<b>Gradient Checkpointing</b><br/>Memory trade-off<br/>Reduced memory]
+        U --> V[<b>Data Parallelism</b><br/>Multi-GPU support<br/>Scalability]
+        V --> W[<b>Batch Optimization</b><br/>66 + 8 accumulation<br/>Memory efficient]
+    end
+    
+    E --> F
+    F --> K
+    K --> P
+    P --> T
+    
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style F fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style K fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    style P fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style T fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class C,G,H,I,J,L,M,N,O,P,Q,R,S,T,U,V,W mathFormula

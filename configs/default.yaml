@@ -59,7 +59,8 @@ model:
 
 data:
   name: edge
-  img_folder: '/data/yeyunfan/edge_detection_datasets/datasets/BSDS_test'
+  # img_folder: '/data/yeyunfan/edge_detection_datasets/datasets/BSDS_test'
+  img_folder: 'data/BSDS_test'
   augment_horizontal_flip: True
   batch_size: 8
   num_workers: 4

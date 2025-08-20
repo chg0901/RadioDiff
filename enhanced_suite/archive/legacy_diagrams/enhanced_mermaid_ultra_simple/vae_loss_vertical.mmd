@@ -1,0 +1,54 @@
+%% Vertical Multi-Column VAE Loss Architecture - 16:9 Layout
+graph TB
+    subgraph "🎯 INPUT COLUMN"
+        A1["🎯 Ground Truth<br/>x: 320×320×1<br/>Original"]
+        A2["🔄 Reconstruction<br/>x̂: 320×320×1<br/>Generated"]
+        A3["📊 Comparison<br/>x vs x̂<br/>Quality assess"]
+        
+        A1 --> A2
+        A2 --> A3
+    end
+    
+    subgraph "📊 RECONSTRUCTION COLUMN"
+        B1["📊 L1 Loss<br/>|x - x̂|₁<br/>Robust"]
+        B2["📊 L2 Loss<br/>|x - x̂|₂²<br/>Sensitive"]
+        B3["⚖️ Combined Loss<br/>λ₁L1 + λ₂L2<br/>Balanced"]
+        B4["📈 Reconstruction Error<br/>Quality metric"]
+        
+        B1 --> B2
+        B2 --> B3
+        B3 --> B4
+    end
+    
+    subgraph "🔧 REGULARIZATION COLUMN"
+        C1["📊 Encoder q_φ<br/>N(μ, σ²)<br/>Posterior"]
+        C2["📊 Prior p(z)<br/>N(0, I)<br/>Standard"]
+        C3["📈 KL Divergence<br/>KL[q||p]<br/>Information"]
+        C4["🔧 Regularized KL<br/>λ_KL × KL<br/>Trade-off"]
+        
+        C1 --> C2
+        C2 --> C3
+        C3 --> C4
+    end
+    
+    subgraph "🎯 OPTIMIZATION COLUMN"
+        D1["🎯 ELBO Objective<br/>E[log p] - KL<br/>Evidence lower bound"]
+        D2["⚖️ Total Loss<br/>L_VAE = L_rec + λ_KL × L_KL<br/>Complete objective"]
+        D3["📈 Optimization<br/>max_θ,φ ELBO<br/>Parameter learning"]
+        D4["🔄 Training<br/>Backpropagation<br/>Gradient descent"]
+        
+        D1 --> D2
+        D2 --> D3
+        D3 --> D4
+    end
+    
+    %% Column connections
+    A3 --> B1
+    B4 --> D1
+    C4 --> D1
+    
+    %% Style columns with different colors
+    style A1 fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
+    style B1 fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style C1 fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    style D1 fill:#E8F5E8,stroke:#388E3C,stroke-width:2px

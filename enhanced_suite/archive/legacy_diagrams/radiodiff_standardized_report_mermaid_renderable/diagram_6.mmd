@@ -1,0 +1,21 @@
+graph TB
+    subgraph "Cosine Decay Schedule"
+        A[Initial LR] --> B[Warmup Phase]
+        B --> C[Decay Phase]
+        C --> D[Minimum LR]
+    end
+    
+    subgraph "Optimization Parameters"
+        E[AdamW Optimizer] --> F[Weight Decay]
+        F --> G[Gradient Clipping]
+        G --> H[Accumulation]
+    end
+    
+    subgraph "Model Regularization"
+        I[EMA Update] --> J[Beta]
+        J --> K[Start After]
+        K --> L[Update Every]
+    end
+    
+    A --> E
+    E --> I

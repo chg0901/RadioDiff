@@ -1,0 +1,47 @@
+# VAE Training Configuration for Edge Detection
+# Uses AdaptEdgeDataset for edge detection training
+
+model:
+  embed_dim: 3
+  lossconfig:
+    disc_start: 50001
+    kl_weight: 0.000001
+    disc_weight: 0.5
+    disc_in_channels: 1
+  ddconfig:
+    double_z: True
+    z_channels: 3
+    resolution: [320, 320]
+    in_channels: 1  # Edge maps are single channel
+    out_ch: 1
+    ch: 128
+    ch_mult: [1, 2, 4]  # num_down = len(ch_mult)-1
+    num_res_blocks: 2
+    attn_resolutions: []
+    dropout: 0.0
+  ckpt_path: ''  # Start from scratch or provide pretrained VAE
+
+data:
+  name: edge
+  batch_size: 8
+  # Dataset configuration for AdaptEdgeDataset
+  data_root: '/path/to/edge/dataset'  # Update with your dataset path
+  image_size: [320, 320]
+  threshold: 0.3  # Edge detection threshold
+  use_uncertainty: False  # Enable for uncertainty modeling
+  augment_horizontal_flip: True
+  # Crop type: 'rand_crop' or 'rand_resize_crop'
+  crop_type: 'rand_crop'
+
+trainer:
+  gradient_accumulate_every: 1
+  lr: !!float 5e-6
+  min_lr: !!float 5e-7
+  train_num_steps: 150000
+  save_and_sample_every: 5000
+  log_freq: 100
+  results_folder: './edge_vae_results'
+  resume_milestone: 0
+  amp: False
+  fp16: False
+  enable_resume: True

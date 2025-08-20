@@ -1,0 +1,32 @@
+graph LR
+    subgraph "Model Configuration"
+        A[Model Type] --> B[Image Size]
+        B --> C[Timesteps]
+        C --> D[Sampling Steps]
+        D --> E[Objective]
+    end
+    
+    subgraph "VAE Configuration"
+        F[Embed Dim] --> G[Z Channels]
+        G --> H[Resolution]
+        H --> I[Channels]
+        I --> J[Multiplier]
+    end
+    
+    subgraph "U-Net Configuration"
+        K[Dim] --> L[Channels]
+        L --> M[Dim Mults]
+        M --> N[Cond Dim]
+        N --> O[Window Sizes]
+    end
+    
+    subgraph "Training Configuration"
+        P[Batch Size] --> Q[Grad Accum]
+        Q --> R[LR]
+        R --> S[Steps]
+        S --> T[Save Every]
+    end
+    
+    A --> F
+    F --> K
+    K --> P

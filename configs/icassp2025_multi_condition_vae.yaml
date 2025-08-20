@@ -1,0 +1,126 @@
+# Multi-Condition VAE Configuration for ICASSP2025 Dataset
+
+model:
+  name: MultiConditionVAE
+  embed_dim: 3
+  lossconfig:
+    disc_start: 50001
+    kl_weight: 0.000001
+    disc_weight: 0.5
+    disc_in_channels: 1
+  ddconfig:
+    double_z: True
+    z_channels: 3
+    resolution: [320, 320]
+    in_channels: 1
+    out_ch: 1
+    ch: 128
+    ch_mult: [ 1,2,4 ]  # num_down = len(ch_mult)-1
+    num_res_blocks: 2
+    attn_resolutions: [ ]
+    dropout: 0.0
+  ckpt_path: null  # Start from scratch
+  condition_config:
+    condition1_channels: 2  # reflectance + transmittance
+    condition2_channels: 1  # distance map
+    fusion_method: 'concatenation'  # Options: 'concatenation', 'cross_attention', 'addition'
+    use_condition_encoder: True
+    condition_embed_dim: 64
+
+data:
+  name: multi_condition_icassp2025
+  batch_size: 16
+  dataset_root: './icassp2025_multi_condition_vae'
+  condition1_dir: 'condition1'
+  condition2_dir: 'condition2'
+  target_dir: 'target'
+  image_size: [320, 320]
+  num_workers: 4
+  pin_memory: True
+
+trainer:
+  gradient_accumulate_every: 2
+  lr: !!float 5e-6
+  min_lr: !!float 5e-7
+  train_num_steps: 150000
+  save_and_sample_every: 5000
+  log_freq: 100
+  results_folder: './results/multi_condition_vae'
+  amp: False
+  fp16: False
+  mixed_precision: 'no'
+
+# Architecture options
+architecture:
+  # VAE approach: 'single' (4-channel) or 'dual' (separate encoders)
+  vae_approach: 'single'
+  
+  # Single VAE: concatenate all conditions + target
+  single_vae:
+    total_channels: 4  # condition1(2) + condition2(1) + target(1)
+    use_bottleneck: True
+    bottleneck_channels: 3
+    
+  # Dual VAE: separate encoders for conditions and target
+  dual_vae:
+    condition_encoder_channels: 3  # condition1(2) + condition2(1)
+    target_encoder_channels: 1
+    shared_decoder: True
+    latent_fusion: 'concatenation'
+
+# Training strategy
+training:
+  # Pretraining: train encoders separately first
+  pretrain_encoders: True
+  pretrain_steps: 50000
+  
+  # Joint training: train full model
+  joint_training: True
+  joint_start_step: 50001
+  
+  # Loss weights
+  reconstruction_weight: 1.0
+  kl_weight: 0.000001
+  perceptual_weight: 0.1
+  adversarial_weight: 0.5
+  
+  # Conditions weighting
+  condition1_weight: 1.0  # reflectance + transmittance
+  condition2_weight: 1.0  # distance map
+
+# Validation and testing
+validation:
+  val_freq: 1000
+  val_steps: 100
+  metrics: ['mse', 'mae', 'ssim', 'psnr']
+  save_best_only: True
+  
+# Data augmentation
+augmentation:
+  use_augmentation: False
+  horizontal_flip: False
+  vertical_flip: False
+  rotation: False
+  color_jitter: False
+  
+# Logging and visualization
+logging:
+  log_dir: './logs/multi_condition_vae'
+  save_reconstructions: True
+  save_latents: True
+  save_gradients: False
+  visualization_freq: 1000
+  
+# Hardware
+hardware:
+  gpu_ids: [0]
+  num_workers: 4
+  pin_memory: True
+  
+# Optimization
+optimization:
+  optimizer: 'adam'
+  weight_decay: 0.01
+  scheduler: 'cosine'
+  warmup_steps: 1000
+  gradient_clip_norm: 1.0

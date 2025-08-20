@@ -1,0 +1,43 @@
+graph TB
+    subgraph "Reconstruction Loss Pipeline"
+        A[Ground Truth<br/>x  in  R^320 x 320 x 1] -> B[VAE Reconstruction<br/>x̂  in  R^320 x 320 x 1]
+        B -> C[L1 Loss<br/>|x - x̂|]
+        B -> D[MSE Loss<br/>||x - x̂||²]
+        C -> E[Reconstruction Loss<br/>L_rec = L1 + MSE]
+        D -> E
+    end
+    
+    subgraph "Perceptual Loss Integration"
+        F[Input Images] -> G[LPIPS Network<br/>Pre-trained VGG]
+        H[Reconstructions] -> G
+        G -> I[Feature Space<br/>Comparison]
+        I -> J[Perceptual Distance<br/>L_perceptual]
+        J -> K[Weighted Addition<br/>L_rec + w_p  x  L_perceptual]
+    end
+    
+    subgraph "KL Divergence Components"
+        L[Encoder Output<br/>mu, sigma] -> M[Posterior<br/>q(z|x) = N(mu, sigma²)]
+        N[Prior<br/>p(z) = N(0, I)] -> O[KL Divergence<br/>KL[q||p]
+        M -> O
+        O -> P[Batch Mean<br/>L_kl = mean(KL)]
+        P -> Q[Weighted KL<br/>w_kl  x  L_kl]
+    end
+    
+    subgraph "Adversarial Training Components"
+        R[VAE Generator] -> S[Reconstructions]
+        S -> T[Discriminator]
+        T -> U[Logits: Fake]
+        U -> V[Generator Loss<br/>L_g = -mean(logits_fake)]
+        V -> W[Encourage Realistic<br/>Generations]
+    end
+    
+    style A fill:#e8f5e8,stroke-width:3px,font-weight:bold
+    style B fill:#e3f2fd,stroke-width:3px,font-weight:bold
+    style E fill:#fff3e0,stroke-width:3px,font-weight:bold
+    style G fill:#f3e5f5,stroke-width:3px,font-weight:bold
+    style K fill:#ffecb3,stroke-width:3px,font-weight:bold
+    style L fill:#bbdefb,stroke-width:3px,font-weight:bold
+    style N fill:#c8e6c9,stroke-width:3px,font-weight:bold
+    style Q fill:#fff9c4,stroke-width:3px,font-weight:bold
+    style R fill:#e1f5fe,stroke-width:3px,font-weight:bold
+    style V fill:#ffebee,stroke-width:3px,font-weight:bold

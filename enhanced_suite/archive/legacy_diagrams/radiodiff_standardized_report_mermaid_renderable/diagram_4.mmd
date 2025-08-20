@@ -1,0 +1,32 @@
+graph TB
+    subgraph "Reconstruction Loss"
+        A[Ground Truth] --> B[VAE Reconstruction]
+        B --> C[L1 Loss]
+        B --> D[MSE Loss]
+        C --> E[Reconstruction Loss]
+        D --> E
+    end
+    
+    subgraph "Perceptual Loss"
+        F[Input Images] --> G[LPIPS Network]
+        H[Reconstructions] --> G
+        G --> I[Feature Comparison]
+        I --> J[Perceptual Distance]
+        J --> K[Weighted Addition]
+    end
+    
+    subgraph "KL Divergence"
+        L[Encoder Output] --> M[Posterior]
+        N[Prior] --> O[KL Divergence]
+        M --> O
+        O --> P[Batch Mean]
+        P --> Q[Weighted KL]
+    end
+    
+    subgraph "Adversarial Training"
+        R[VAE Generator] --> S[Reconstructions]
+        S --> T[Discriminator]
+        T --> U[Logits]
+        U --> V[Generator Loss]
+        V --> W[Realistic Generations]
+    end

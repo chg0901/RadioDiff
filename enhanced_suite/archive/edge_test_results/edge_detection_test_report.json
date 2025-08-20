@@ -1,0 +1,108 @@
+{
+  "timestamp": "2025-08-18T11:10:44.949342",
+  "data_root": "/home/cine/Documents/dataset/RadioMapSeer",
+  "tests": {
+    "dataset_loading": {
+      "status": "success",
+      "errors": [],
+      "metrics": {
+        "total_files": 56080,
+        "subset_count": 0,
+        "sample_subsets": [],
+        "original_total_files": 56080,
+        "file_count_consistent": true
+      }
+    },
+    "edge_detection_methods": {
+      "status": "success",
+      "errors": [],
+      "metrics": {
+        "canny_success_rate": 1.0,
+        "sobel_success_rate": 1.0,
+        "laplacian_success_rate": 1.0,
+        "prewitt_success_rate": 1.0
+      },
+      "methods_tested": [
+        {
+          "method": "canny",
+          "success_count": 10,
+          "failure_count": 0,
+          "errors": []
+        },
+        {
+          "method": "sobel",
+          "success_count": 10,
+          "failure_count": 0,
+          "errors": []
+        },
+        {
+          "method": "laplacian",
+          "success_count": 10,
+          "failure_count": 0,
+          "errors": []
+        },
+        {
+          "method": "prewitt",
+          "success_count": 10,
+          "failure_count": 0,
+          "errors": []
+        }
+      ]
+    },
+    "error_handling": {
+      "status": "success",
+      "errors": [],
+      "metrics": {
+        "processing_time": 11.671078443527222,
+        "images_generated": 100,
+        "edges_generated": 100,
+        "success_rate": 1.0,
+        "naming_consistent": true
+      }
+    },
+    "dataset_structure": {
+      "status": "success",
+      "errors": [],
+      "metrics": {
+        "flat_structure": {
+          "image_dir_exists": true,
+          "edge_dir_exists": true,
+          "image_count": 50,
+          "edge_count": 50
+        },
+        "original_structure": {
+          "train_dirs_exist": true,
+          "train_count": 40,
+          "val_count": 10
+        }
+      }
+    },
+    "performance_metrics": {
+      "status": "success",
+      "errors": [],
+      "metrics": {
+        "batch_10": {
+          "processing_time": 10.916876077651978,
+          "files_per_second": 0.916012962762404,
+          "success_rate": 1.0
+        },
+        "batch_50": {
+          "processing_time": 11.284424543380737,
+          "files_per_second": 4.430886112781817,
+          "success_rate": 1.0
+        },
+        "batch_100": {
+          "processing_time": 11.377312183380127,
+          "files_per_second": 8.789422175307722,
+          "success_rate": 1.0
+        }
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 5,
+    "successful_tests": 5,
+    "success_rate": 1.0,
+    "overall_status": "success"
+  }
+}

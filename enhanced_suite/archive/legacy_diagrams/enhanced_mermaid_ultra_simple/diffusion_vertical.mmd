@@ -1,0 +1,56 @@
+%% Vertical Multi-Column Diffusion Process - 16:9 Layout
+graph TB
+    subgraph "📈 FORWARD COLUMN"
+        A1["📈 Forward Process<br/>q(xₜ|x₀)<br/>Noise addition"]
+        A2["📊 Initial State<br/>x₀: Clean radio<br/>320×320×1"]
+        A3["🔄 Noise Schedule<br/>β: 0.0001→0.02<br/>1000 steps"]
+        A4["🎯 Final State<br/>x_T: Pure noise<br/>N(0, I)"]
+        
+        A1 --> A2
+        A2 --> A3
+        A3 --> A4
+    end
+    
+    subgraph "🔄 REVERSE COLUMN"
+        B1["🔄 Reverse Process<br/>p_θ(xₜ₋₁|xₜ, c)<br/>Denoising"]
+        B2["📊 Input State<br/>xₜ: Noisy data<br/>t = T, T-1, ..., 1"]
+        B3["🔧 U-Net Prediction<br/>ε_θ(xₜ, t, c)<br/>Noise estimate"]
+        B4["🎯 Output State<br/>x₀: Clean result<br/>Reconstructed"]
+        
+        B1 --> B2
+        B2 --> B3
+        B3 --> B4
+    end
+    
+    subgraph "🎯 KNOWLEDGE COLUMN"
+        C1["🎯 Knowledge-Aware<br/>pred_KC<br/>Physics objective"]
+        C2["📊 Loss Function<br/>L_KC = E||ε - ε_θ||²<br/>MSE loss"]
+        C3["🔧 EM Constraints<br/>Domain knowledge<br/>Radio physics"]
+        C4["📈 Benefits<br/>1000× speedup<br/>Real-time"]
+        
+        C1 --> C2
+        C2 --> C3
+        C3 --> C4
+    end
+    
+    subgraph "⚡ MATHEMATICAL COLUMN"
+        D1["⚡ Forward Math<br/>xₜ = √ᾱₜx₀ + √(1-ᾱₜ)ε<br/>Conditional Gaussian"]
+        D2["🔧 Condition Integration<br/>c: Building layout<br/>Spatial info"]
+        D3["📊 Reverse Math<br/>xₜ₋₁ = f(xₜ, ε_θ)<br/>Learned reverse"]
+        D4["🎯 Single-Step<br/>No field测量<br/>Cost-effective"]
+        
+        D1 --> D2
+        D2 --> D3
+        D3 --> D4
+    end
+    
+    %% Column connections
+    A4 --> B1
+    B4 --> C1
+    C4 --> D1
+    
+    %% Style columns with different colors
+    style A1 fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+    style B1 fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    style C1 fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style D1 fill:#E8F5E8,stroke:#388E3C,stroke-width:2px

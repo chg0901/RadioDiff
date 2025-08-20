@@ -1,0 +1,27 @@
+=== Edge Detection Test Summary ===
+
+Test Date: 2025-08-18T11:10:44.949342
+Data Root: /home/cine/Documents/dataset/RadioMapSeer
+
+=== Test Results ===
+
+Dataset Loading: SUCCESS
+  Metrics: 5 key metrics
+
+Edge Detection Methods: SUCCESS
+  Metrics: 4 key metrics
+
+Error Handling: SUCCESS
+  Metrics: 5 key metrics
+
+Dataset Structure: SUCCESS
+  Metrics: 2 key metrics
+
+Performance Metrics: SUCCESS
+  Metrics: 3 key metrics
+
+=== Overall Summary ===
+Total Tests: 5
+Successful Tests: 5
+Success Rate: 100.00%
+Overall Status: success

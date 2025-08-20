@@ -1,0 +1,39 @@
+graph LR
+    subgraph "📊 Input Specifications"
+        A[Image: 320×320×1<br/>Radio Map Pathloss] --> B[Condition: 320×320×3<br/>Building Layout]
+        B --> C[Mask: Optional<br/>Spatial Constraints]
+        C --> D[Latent: 80×80×3<br/>Compressed Representation]
+    end
+    
+    subgraph "🏗️ VAE Architecture (First Stage)"
+        E[Encoder<br/>ResNet Blocks] --> F[Downsampling<br/>4× Reduction]
+        F --> G[Bottleneck<br/>Latent Space]
+        G --> H[Decoder<br/>ResNet Blocks]
+        H --> I[Upsampling<br/>4× Expansion]
+        I --> J[Reconstruction<br/>Original Space]
+    end
+    
+    subgraph "🎛️ Conditional U-Net Architecture"
+        K[Input: x_t + t + c] --> L[Time Embedding<br/>Positional Encoding]
+        L --> M[Conditional Processing<br/>Swin Transformer]
+        M --> N[Multi-scale Features<br/>Hierarchical Extraction]
+        N --> O[Window Attention<br/>[8,8], [4,4], [2,2], [1,1]]
+        O --> P[Adaptive FFT<br/>Fourier Scale: 16]
+        P --> Q[Output: Predicted Noise<br/>ε_θ(x_t, t, c)]
+    end
+    
+    subgraph "📈 Diffusion Parameters"
+        R[Timesteps: 1000] --> S[Beta Schedule<br/>Linear: 0.0001→0.02]
+        S --> T[Objective: pred_KC<br/>Knowledge-Aware]
+        T --> U[Loss: L2<br/>Mean Squared Error]
+        U --> V[Scale Factor: 0.3<br/>Latent Space Scaling]
+    end
+    
+    A --> E
+    B --> M
+    D --> G
+    R --> S
+    
+    style E fill:#E3F2FD
+    style K fill:#F1F8E9
+    style R fill:#FFF8E1

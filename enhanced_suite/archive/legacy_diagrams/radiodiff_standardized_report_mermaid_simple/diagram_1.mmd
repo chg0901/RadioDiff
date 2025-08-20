@@ -1,0 +1,44 @@
+graph TB
+    subgraph "📡 Input Data Pipeline"
+        A[RadioMapSeer Dataset<br/>320×320 Radio Maps] -> B[RadioUNet_c Loader<br/>batch_size: 66]
+        B -> C[Gradient Accumulation<br/>8 steps → Effective: 528]
+        C -> D[Input Tensors<br/>image: B×1×320×320<br/>cond: B×3×320×320]
+    end
+    
+    subgraph "🎯 First Stage: VAE Encoder"
+        E[AutoencoderKL<br/>embed_dim: 3] -> F[Encoder<br/>ResNet Architecture]
+        F -> G[Latent Space z<br/>z~q_φ(z|x)<br/>Shape: [B, 3, 80, 80]
+        G -> H[16× Compression<br/>320×320 → 80×80<br/>Computational Efficiency]
+    end
+    
+    subgraph "🔄 Second Stage: Conditional U-Net"
+        I[Conditional U-Net<br/>dim: 128] -> J[Time Embedding<br/>Sinusoidal Encoding]
+        J -> K[Condition Integration<br/>Swin Transformer<br/>Window-based Attention]
+        K -> L[Multi-scale Features<br/>dim_mults: [1,2,4,4]
+        L -> M[Adaptive FFT Module<br/>Frequency Domain Enhancement]
+        M -> N[Noise Prediction<br/>epsilon_theta(x_t, t, c)]
+    end
+    
+    subgraph "🌊 Diffusion Process"
+        O[Forward Diffusion<br/>q(x_t|x_0) = N(sqrtalpha_bar_tx_0, (1-alpha_bar_t)𝐈)] -> P[Noise Schedule<br/>β_t: linear 0.0001→0.02]
+        P -> Q[Reverse Process<br/>p_θ(x_0|x_t, c)]
+        Q -> R[Knowledge-Aware Objective<br/>pred_KC]
+    end
+    
+    subgraph "⚙️ Training Loop"
+        S[L2 Loss Computation] -> T[Backpropagation<br/>Gradient Clipping: 1.0]
+        T -> U[AdamW Optimizer<br/>lr: 5e-5, wd: 1e-4]
+        U -> V[Cosine LR Schedule<br/>lr(t) = max(5e-6, 5e-5×(1-t/T)^0.96)]
+        V -> W[EMA Model Update<br/>β: 0.999<br/>after 10,000 steps]
+    end
+    
+    D -> E
+    G -> I
+    N -> S
+    R -> S
+    
+    style A fill:#E3F2FD]
+    style E fill:#F3E5F5]
+    style I fill:#E8F5E8]
+    style O fill:#FFF3E0]
+    style S fill:#FCE4EC]

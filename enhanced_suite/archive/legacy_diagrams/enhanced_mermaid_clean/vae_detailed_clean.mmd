@@ -1,0 +1,35 @@
+%% Enhanced VAE Architecture - Clean
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#7b1fa2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4a148c', 'lineColor': '#757575', 'secondaryColor': '#0277bd', 'tertiaryColor': '#2e7d32', 'background': '#f5f5f5'}}}%%
+graph LR
+    subgraph "🏗️ VAE ENCODER PATH"
+        A[<b>Input Image</b><br/>320×320×1<br/>Radio map pathloss] --> B[<b>Initial Convolution</b><br/>128 channels<br/>Feature extraction]
+        B --> C[<b>ResNet Block 1</b><br/>Downsample to 160×160<br/>Multi-scale features]
+        C --> D[<b>ResNet Block 2</b><br/>Downsample to 80×80<br/>Hierarchical processing]
+        D --> E[<b>Bottleneck Layer</b><br/>80×80×3 latent space<br/>Compressed representation]
+    end
+    
+    subgraph "🔄 VAE DECODER PATH"
+        F[<b>Latent Input</b><br/>80×80×3<br/>Compressed features] --> G[<b>ResNet Block 1</b><br/>Upsample to 160×160<br/>Feature expansion]
+        G --> H[<b>ResNet Block 2</b><br/>Upsample to 320×320<br/>Spatial restoration]
+        H --> I[<b>Final Convolution</b><br/>1 channel output<br/>Reconstruction]
+    end
+    
+    subgraph "📊 VAE MATHEMATICAL FOUNDATION"
+        J[<b>Encoder Distribution</b><br/>q_phi(z|x)<br/>Approximate posterior] --> K[<b>Latent Regularization</b><br/>KL divergence<br/>Information bottleneck]
+        K --> L[<b>Decoder Distribution</b><br/>p_theta(x|z)<br/>Generative model]
+        L --> M[<b>ELBO Objective</b><br/>Evidence lower bound<br/>Variational inference]
+    end
+    
+    subgraph "⚖️ VAE LOSS COMPONENTS"
+        N[<b>Reconstruction Loss</b><br/>L_rec = ||x - x_hat||^2<br/>L2 distance] --> O[<b>KL Divergence</b><br/>L_KL = KL[q||p]<br/>Regularization]
+        O --> P[<b>Total VAE Loss</b><br/>L_VAE = L_rec + beta*L_KL<br/>Balanced objective]
+    end
+    
+    E --> F
+    J --> K
+    N --> O
+    
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style F fill:#E3F2FD,stroke:#0277BD,stroke-width:3px,color:#000000
+    style J fill:#E8F5E8,stroke:#2E7D32,stroke-width:3px,color:#000000
+    style N fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000

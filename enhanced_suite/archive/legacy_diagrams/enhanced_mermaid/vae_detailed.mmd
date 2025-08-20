@@ -1,0 +1,40 @@
+%% Enhanced VAE Architecture Details - 16:9 aspect ratio
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#7b1fa2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4a148c', 'lineColor': '#757575', 'secondaryColor': '#0277bd', 'tertiaryColor': '#2e7d32', 'background': '#f5f5f5'}}}%%
+graph LR
+    subgraph "🏗️ <b><font color=#7b1fa2>VAE ENCODER PATH</font></b>"
+        A[<b>Input Image</b><br/><font color=#666>320×320×1</font><br/><i>Radio map pathloss</i>] --> B[<b>Initial Convolution</b><br/><font color=#666>128 channels</font><br/><i>Feature extraction</i>]
+        B --> C[<b>ResNet Block 1</b><br/><font color=#666>Downsample to 160×160</font><br/><i>Multi-scale features</i>]
+        C --> D[<b>ResNet Block 2</b><br/><font color=#666>Downsample to 80×80</font><br/><i>Hierarchical processing</i>]
+        D --> E[<b>Bottleneck Layer</b><br/><font color=#666>80×80×3 latent space</font><br/><i>Compressed representation</i>]
+    end
+    
+    subgraph "🔄 <b><font color=#0277bd>VAE DECODER PATH</font></b>"
+        F[<b>Latent Input</b><br/><font color=#666>80×80×3</font><br/><i>Compressed features</i>] --> G[<b>ResNet Block 1</b><br/><font color=#666>Upsample to 160×160</font><br/><i>Feature expansion</i>]
+        G --> H[<b>ResNet Block 2</b><br/><font color=#666>Upsample to 320×320</font><br/><i>Spatial restoration</i>]
+        H --> I[<b>Final Convolution</b><br/><font color=#666>1 channel output</font><br/><i>Reconstruction</i>]
+    end
+    
+    subgraph "📊 <b><font color=#2e7d32>VAE MATHEMATICAL FOUNDATION</font></b>"
+        J[<b>Encoder Distribution</b><br/><font color=#666>q_φ(z|x) = 𝒩(μ_φ(x), σ_φ²(x)𝐈)</font><br/><i>Approximate posterior</i>] --> K[<b>Latent Space Regularization</b><br/><font color=#666>KL[q_φ(z|x)‖p(z)]</font><br/><i>Information bottleneck</i>]
+        K --> L[<b>Decoder Distribution</b><br/><font color=#666>p_θ(x|z) = 𝒩(μ_θ(z), σ²𝐈)</font><br/><i>Generative model</i>]
+        L --> M[<b>ELBO Objective</b><br/><font color=#666>max 𝔼[log p_θ(x|z)] - KL[q‖p]</font><br/><i>Evidence lower bound</i>]
+    end
+    
+    subgraph "⚖️ <b><font color=#d32f2f>VAE LOSS COMPONENTS</font></b>"
+        N[<b>Reconstruction Loss</b><br/><font color=#666>ℒ_rec = ||x - x̂||²</font><br/><i>L2 distance</i>] --> O[<b>KL Divergence</b><br/><font color=#666>ℒ_KL = KL[q_φ(z|x)‖p(z)]</font><br/><i>Regularization term</i>]
+        O --> P[<b>Total VAE Loss</b><br/><font color=#666>ℒ_VAE = ℒ_rec + β·ℒ_KL</font><br/><i>Balanced objective</i>]
+    end
+    
+    E --> F
+    J --> K
+    N --> O
+    
+    %% Style definitions
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style F fill:#E3F2FD,stroke:#0277BD,stroke-width:3px,color:#000000
+    style J fill:#E8F5E8,stroke:#2E7D32,stroke-width:3px,color:#000000
+    style N fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    
+    %% Mathematical notation styling
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class J,K,L,M,N,O,P mathFormula

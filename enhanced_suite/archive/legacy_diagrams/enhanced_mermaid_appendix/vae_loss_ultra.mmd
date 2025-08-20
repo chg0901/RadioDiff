@@ -1,0 +1,28 @@
+%% Enhanced VAE Loss Architecture - Ultra Simple
+graph TB
+    subgraph "🎯 RECONSTRUCTION LOSS"
+        A[["Ground Truth x<br/>320×320×1<br/>Original radio map"]] --> B[["Reconstruction x̂<br/>320×320×1<br/>Generated output"]]
+        B --> C[["L1 Loss<br/>|x - x̂|₁<br/>Robust to outliers"]]
+        B --> D[["L2 Loss<br/>|x - x̂|₂²<br/>Sensitive to errors"]]
+        C --> E[["Combined Reconstruction<br/>λ₁L1 + λ₂L2<br/>Multi-objective"]]
+        D --> E
+    end
+    
+    subgraph "📊 KL DIVERGENCE LOSS"
+        F[["Encoder q_φ(z|x)<br/>N(μ, σ²)<br/>Learned distribution"]] --> G[["Prior p(z)<br/>N(0, I)<br/>Standard normal"]]
+        G --> H[["KL Divergence<br/>KL[q||p]<br/>Information bottleneck"]]
+        H --> I[["Regularization Strength<br/>λ_KL × KL<br/>Compression control"]]
+    end
+    
+    subgraph "⚖️ VAE OBJECTIVE"
+        J[["Evidence Lower Bound<br/>ELBO = E[log p(x|z)] - KL[q||p]<br/>Variational inference"]] --> K[["Total VAE Loss<br/>L_VAE = L_rec + λ_KL × L_KL<br/>Balanced objective"]]
+        K --> L[["Optimization Target<br/>max_θ,φ ELBO<br/>Model training"]]
+        L --> M[["Trade-off Parameters<br/>λ_KL = 0.1-1.0<br/>Reconstruction vs compression"]]
+    end
+    
+    E --> J
+    I --> J
+    
+    style A fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px
+    style F fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style J fill:#E8F5E8,stroke:#388E3C,stroke-width:3px

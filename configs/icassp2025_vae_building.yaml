@@ -1,0 +1,40 @@
+# Configuration for VAE₁: Building structure (Reflectance + Transmittance channels)
+model:
+  embed_dim: 2
+  lossconfig:
+    disc_start: 50001
+    kl_weight: 0.000001
+    disc_weight: 0.5
+    disc_in_channels: 2
+  ddconfig:
+    double_z: True
+    z_channels: 2
+    resolution: [96, 96]
+    in_channels: 2
+    out_ch: 2
+    ch: 64
+    ch_mult: [ 1,2,4 ]  # num_down = len(ch_mult)-1
+    num_res_blocks: 2
+    attn_resolutions: [ ]
+    dropout: 0.0
+  ckpt_path: null
+
+data:
+  name: icassp2025_building
+  data_root: "./datasets/ICASSP2025_Dataset"
+  batch_size: 16
+  crop_size: 96
+  tx_margin: 10
+  vae_type: "building"
+
+trainer:
+  gradient_accumulate_every: 2
+  lr: !!float 5e-6
+  min_lr: !!float 5e-7
+  train_num_steps: 150000
+  save_and_sample_every: 5000
+  log_freq: 100
+  results_folder: './results/icassp2025_vae_building'
+  amp: False
+  fp16: False
+  vae_type: "building"

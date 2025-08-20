@@ -1,0 +1,49 @@
+%% Enhanced RadioDiff System Architecture - Simplified
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1e88e5', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#0d47a1', 'lineColor': '#757575', 'secondaryColor': '#43a047', 'tertiaryColor': '#fb8c00', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "📡 <b><font color=#1e88e5>INPUT DATA PIPELINE</font></b>"
+        A[<b>RadioMapSeer Dataset</b><br/><font color=#666>320×320 Radio Maps</font><br/>Real-world pathloss data] --> B[<b>RadioUNet_c Loader</b><br/><font color=#666>batch_size: 66</font><br/>DPM simulation integration]
+        B --> C[<b>Gradient Accumulation</b><br/><font color=#666>8 steps → Effective: 528</font><br/>Memory optimization]
+        C --> D[<b>Input Tensors</b><br/><font color=#666>image: B×1×320×320</font><br/><font color=#666>cond: B×3×320×320</font><br/>Normalized inputs]
+    end
+    
+    subgraph "🎯 <b><font color=#43a047>FIRST STAGE: VAE ENCODER</font></b>"
+        E[<b>AutoencoderKL</b><br/><font color=#666>embed_dim: 3</font><br/>Kullback-Leibler divergence] --> F[<b>Encoder Network</b><br/><font color=#666>ResNet Architecture</font><br/>Multi-scale feature extraction]
+        F --> G[<b>Latent Space z</b><br/><font color=#666>Shape: [B, 3, 80, 80]</font><br/>16× compression ratio]
+        G --> H[<b>Compression Benefits</b><br/><font color=#666>320×320 → 80×80</font><br/>Computational efficiency]
+    end
+    
+    subgraph "🔄 <b><font color=#fb8c00>SECOND STAGE: CONDITIONAL U-NET</font></b>"
+        I[<b>Conditional U-Net</b><br/><font color=#666>dim: 128</font><br/>Noise prediction network] --> J[<b>Time Embedding</b><br/><font color=#666>Sinusoidal Encoding</font><br/>Positional information]
+        J --> K[<b>Condition Integration</b><br/><font color=#666>Swin Transformer</font><br/>Window-based attention]
+        K --> L[<b>Multi-scale Features</b><br/><font color=#666>dim_mults: [1,2,4,4]</font><br/>Hierarchical processing]
+        L --> M[<b>Adaptive FFT Module</b><br/><font color=#666>Fourier Scale: 16</font><br/>Frequency domain enhancement]
+        M --> N[<b>Noise Prediction</b><br/><font color=#666>ε_θ(x_t, t, c)</font><br/>Knowledge-aware objective]
+    end
+    
+    subgraph "🌊 <b><font color=#e53935>DIFFUSION PROCESS</font></b>"
+        O[<b>Forward Diffusion</b><br/><font color=#666>Noise addition process</font><br/>q(x_t|x_0) = N(√ᾱ_tx_0, (1-ᾱ_t)I)] --> P[<b>Noise Schedule</b><br/><font color=#666>β_t: linear 0.0001→0.02</font><br/>1000 timesteps]
+        P --> Q[<b>Reverse Process</b><br/><font color=#666>p_θ(x_0|x_t, c)</font><br/>Denoising with conditioning]
+        Q --> R[<b>Knowledge-Aware Objective</b><br/><font color=#666>pred_KC</font><br/>Radio propagation physics]
+    end
+    
+    subgraph "⚙️ <b><font color=#8e24aa>TRAINING LOOP</font></b>"
+        S[<b>L2 Loss Computation</b><br/><font color=#666>Mean squared error</font><br/>L = ||ε - ε_θ||²] --> T[<b>Backpropagation</b><br/><font color=#666>Gradient Clipping: 1.0</font><br/>Stable training]
+        T --> U[<b>AdamW Optimizer</b><br/><font color=#666>lr: 5e-5, wd: 1e-4</font><br/>Weight decay regularization]
+        U --> V[<b>Cosine LR Schedule</b><br/><font color=#666>lr(t) = max(5e-6, 5e-5×(1-t/T)^0.96)</font><br/>Learning rate decay]
+        V --> W[<b>EMA Model Update</b><br/><font color=#666>β: 0.999</font><br/>Exponential moving average]
+    end
+    
+    D --> E
+    G --> I
+    N --> S
+    R --> S
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style E fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    style I fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    style O fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style S fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    
+    classDef mathBox fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class G,R,S mathBox

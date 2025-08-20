@@ -1,0 +1,91 @@
+model:
+  model_type: const_sde
+  model_name: cond_unet
+  image_size: [320, 320]
+  input_keys: ['image', 'cond']
+  ignore_keys: [ ]
+  only_model: False
+  timesteps: 1000
+  train_sample: -1
+  sampling_timesteps: 1
+  loss_type: l2
+  objective: pred_KC
+  start_dist: normal
+  perceptual_weight: 0
+  scale_factor: 0.18215  # Standard VAE scaling factor
+  scale_by_std: True
+  default_scale: True
+  scale_by_softsign: False
+  eps: !!float 1e-4
+  weighting_loss: False  # Disabled for training stability
+  use_disloss: True
+  #ckpt_path: '/mnt/mydisk/kdtao/DiffRadio/results/LDM_2/model-2.pt'
+  ckpt_path: '/home/cine/Documents/Github/RadioDiff/radiodiff_LDM/model-61.pt'
+
+  first_stage:
+    embed_dim: 3
+    lossconfig:
+      disc_start: 50001
+      kl_weight: 0.000001
+      disc_weight: 0.5
+      disc_in_channels: 1
+    ddconfig:
+      double_z: True
+      z_channels: 3
+      resolution: [320, 320]
+      in_channels: 1
+      out_ch: 1
+      ch: 128
+      ch_mult: [ 1,2,4 ]  # num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: [ ]
+      dropout: 0.0
+    ckpt_path: 'radiodiff_Vae/model-29.pt' # the weight is obtained by training the first stage model
+
+  unet:
+    dim: 128
+    cond_net: swin
+    fix_bb: False
+    channels: 3
+    out_mul: 1
+    dim_mults: [ 1, 2, 4, 4, ] # num_down = len(dim_mults)
+    cond_in_dim: 3
+    cond_dim: 128
+    cond_dim_mults: [ 2, 4 ] # num_down = len(cond_dim_mults)
+    window_sizes1: [ [ 8, 8 ], [ 4, 4 ], [ 2, 2 ], [ 1, 1 ] ]
+    window_sizes2: [ [ 8, 8 ], [ 4, 4 ], [ 2, 2 ], [ 1, 1 ] ]
+    fourier_scale: 16
+    cond_pe: False
+    num_pos_feats: 128
+    cond_feature_size: [ 80, 80 ]
+    input_size: [80, 80]
+    DPMCARK: False
+
+finetune:   
+  ckpt_path:
+
+
+data:
+  name: radio
+  batch_size: 32
+
+trainer:
+  gradient_accumulate_every: 1
+  lr: !!float 5e-6  # Reduced from 1e-5 for resumed training stability
+  min_lr: !!float 1e-6
+  train_num_steps: 50000
+  save_and_sample_every: 200
+  enable_resume: True
+  log_freq: 1000
+  #results_folder: "/home/chenglaoshi/KD/DiffRadio/results/LDM_Car"
+  #results_folder: "/data/chenglaoshi/DiffRadio/results/LDM_Car_aa"
+  results_folder: "./radiodiff_LDM"
+  amp: True
+  fp16: False
+  resume_milestone: 61
+  test_before: True
+  ema_update_after_step: 10000
+  ema_update_every: 10
+
+
+

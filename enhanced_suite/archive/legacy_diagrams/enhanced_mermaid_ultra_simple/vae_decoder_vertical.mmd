@@ -1,0 +1,54 @@
+%% Vertical Multi-Column VAE Decoder Architecture - 16:9 Layout
+graph TB
+    subgraph "🎯 LATENT COLUMN"
+        A1["🎯 Latent z<br/>80×80×3<br/>Compressed"]
+        A2["📊 Shape<br/>B×3×80×80"]
+        A3["🔧 Distribution<br/>q_φ(z|x)"]
+        
+        A1 --> A2
+        A2 --> A3
+    end
+    
+    subgraph "🔄 DECODING COLUMN"
+        B1["🔧 Conv 128<br/>Feature expand<br/>Kernel: 3×3"]
+        B2["📐 ResNet 1<br/>80→160<br/>Upsample 2×"]
+        B3["📐 ResNet 2<br/>160→320<br/>Upsample 2×"]
+        B4["📡 Output<br/>320×320×1<br/>Reconstructed"]
+        
+        B1 --> B2
+        B2 --> B3
+        B3 --> B4
+    end
+    
+    subgraph "📊 GENERATION COLUMN"
+        C1["🔄 Generation Process<br/>p_θ(x|z)"]
+        C2["📊 Likelihood Model<br/>Output distribution"]
+        C3["🎯 Decoding Function<br/>x̂ = Decoder(z)"]
+        C4["📈 Quality Metric<br/>||x - x̂||²"]
+        
+        C1 --> C2
+        C2 --> C3
+        C3 --> C4
+    end
+    
+    subgraph "⚡ RECONSTRUCTION COLUMN"
+        D1["⚡ Progressive<br/>80→160→320<br/>Hierarchical"]
+        D2["🔗 Skip Connections<br/>Detail preserve<br/>Feature reuse"]
+        D3["🎯 Physical Constraints<br/>Radio propagation<br/>EM physics"]
+        D4["📈 Applications<br/>Real-time<br/>6G networks"]
+        
+        D1 --> D2
+        D2 --> D3
+        D3 --> D4
+    end
+    
+    %% Column connections
+    A3 --> B1
+    B4 --> C1
+    C4 --> D1
+    
+    %% Style columns with different colors
+    style A1 fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style B1 fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    style C1 fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+    style D1 fill:#FFF3E0,stroke:#F57C00,stroke-width:2px

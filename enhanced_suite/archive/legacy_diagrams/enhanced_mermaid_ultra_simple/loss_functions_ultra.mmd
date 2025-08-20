@@ -1,0 +1,40 @@
+%% Enhanced Loss Functions - Ultra Simple
+graph TB
+    subgraph "🔄 RECONSTRUCTION LOSS PIPELINE"
+        A["Ground Truth<br/>Original radio map<br/>320×320×1"] --> B["VAE Reconstruction<br/>Generated output<br/>320×320×1"]
+        B --> C["L1 Loss<br/>Absolute error<br/>Robust to outliers"]
+        B --> D["MSE Loss<br/>Squared error<br/>Sensitive to errors"]
+        C --> E["Reconstruction Loss<br/>Combined objective<br/>L1 + MSE"]
+        D --> E
+    end
+    
+    subgraph "🧠 PERCEPTUAL LOSS INTEGRATION"
+        F["Input Images<br/>Original & reconstructed<br/>Feature extraction"] --> G["LPIPS Network<br/>Pre-trained VGG<br/>Deep features"]
+        H["Feature Maps<br/>Deep representations<br/>Feature space"] --> I["Perceptual Distance<br/>Human perception<br/>Semantic similarity"]
+        G --> H
+        I --> J["Weighted Addition<br/>Multi-objective<br/>Reconstruction + Perceptual"]
+    end
+    
+    subgraph "📊 KL DIVERGENCE COMPONENTS"
+        K["Encoder Parameters<br/>Mean and variance<br/>Latent distribution"] --> L["Posterior Distribution<br/>Approximate posterior<br/>q(z|x)"]
+        M["Prior Distribution<br/>Standard normal<br/>p(z) = N(0, I)"] --> N["KL Divergence<br/>Information bottleneck<br/>KL[q||p]"]
+        L --> N
+        N --> O["Batch Mean<br/>Regularization<br/>E[KL(q||p)]"]
+        O --> P["Weighted KL<br/>Trade-off parameter<br/>lambda_KL * L_KL"]
+    end
+    
+    subgraph "⚔️ ADVERSARIAL TRAINING"
+        Q["VAE Generator<br/>Reconstruction model<br/>G_phi: x -> z -> x_hat"] --> R["Generated Samples<br/>Reconstructed output<br/>x_hat = G_phi(x)"]
+        R --> S["Discriminator<br/>Classifier network<br/>Real vs Fake"]
+        S --> T["Discriminator Output<br/>Classification score<br/>D_psi(x_hat)"]
+        T --> U["Generator Loss<br/>Adversarial objective<br/>L_adv = -E[log(D(G(x)))]"]
+    end
+    
+    E --> J
+    P --> J
+    U --> J
+    
+    style A fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
+    style K fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style Q fill:#E8F5E8,stroke:#388E3C,stroke-width:3px

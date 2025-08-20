@@ -1,0 +1,21 @@
+%% Compact VAE Loss Architecture - Horizontal Layout
+graph TB
+    A[["🎯 Ground Truth<br/>x: 320×320×1"]] --> B[["🔄 Reconstruction<br/>x̂: 320×320×1"]]
+    B --> C[["📊 L1 Loss<br/>|x - x̂|₁"]]
+    B --> D[["📊 L2 Loss<br/>|x - x̂|₂²"]]
+    C --> E[["⚖️ Combined<br/>λ₁L1 + λ₂L2"]]
+    D --> E
+    
+    F[["📊 Encoder q_φ<br/>N(μ, σ²)"]] --> G[["📊 Prior p(z)<br/>N(0, I)"]]
+    G --> H[["📈 KL Divergence<br/>KL[q||p]"]]
+    H --> I[["🔧 Regularization<br/>λ_KL × KL"]]
+    
+    J[["🎯 ELBO<br/>E[log p] - KL"]] --> K[["⚖️ Total Loss<br/>L_VAE = L_rec + λ_KL × L_KL"]]
+    K --> L[["📈 Optimization<br/>max_θ,φ ELBO"]]
+    
+    E --> J
+    I --> J
+    
+    style A fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
+    style F fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style J fill:#E8F5E8,stroke:#388E3C,stroke-width:2px

@@ -1,0 +1,51 @@
+%% Enhanced Optimization Strategy - 16:9 aspect ratio
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#7b1fa2', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4a148c', 'lineColor': '#757575', 'secondaryColor': '#1976d2', 'tertiaryColor': '#388e3c', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "📈 <b><font color=#7b1fa2>COSINE DECAY SCHEDULE</font></b>"
+        A[<b>Initial Learning Rate</b><br/><font color=#666>η₀ = 5×10⁻⁵</font><br/><i>Starting value</i>] --> B[<b>Warmup Phase</b><br/><font color=#666>Optional</font><br/><i>Gradual increase</i>]
+        B --> C[<b>Decay Function</b><br/><font color=#666>η(t) = η₀ × max(η_min/η₀, (1-t/T)^0.96)</font><br/><i>Cosine annealing</i>]
+        C --> D[<b>Minimum Learning Rate</b><br/><font color=#666>η_min = 5×10⁻⁶</font><br/><i>Floor value</i>]
+        D --> E[<b>Total Training Steps</b><br/><font color=#666>T = 50,000</font><br/><i>Training duration</i>]
+    end
+    
+    subgraph "🔧 <b><font color=#1976d2>OPTIMIZATION PARAMETERS</font></b>"
+        F[<b>Optimizer Choice</b><br/><font color=#666>AdamW</font><br/><i>Adam with weight decay</i>] --> G[<b>Weight Decay</b><br/><font color=#666>λ = 1×10⁻⁴</font><br/><i>L2 regularization</i>]
+        G --> H[<b>Gradient Clipping</b><br/><font color=#666>max_norm = 1.0</font><br/><i>Stability constraint</i>]
+        H --> I[<b>Gradient Accumulation</b><br/><font color=#666>8 steps</font><br/><i>Effective batch: 528</i>]
+        I --> J[<b>Mixed Precision</b><br/><font color=#666>FP16</font><br/><i>Memory efficiency</i>]
+    end
+    
+    subgraph "🎯 <b><font color=#388e3c>MODEL REGULARIZATION</font></b>"
+        K[<b>EMA Update</b><br/><font color=#666>Exponential Moving Average</font><br/><i>Weight smoothing</i>] --> L[<b>EMA Beta</b><br/><font color=#666>β = 0.999</font><br/><i>Smoothing factor</i>]
+        L --> M[<b>EMA Start Step</b><br/><font color=#666>10,000 steps</font><br/><i>After warmup</i>]
+        M --> N[<b>Update Frequency</b><br/><font color=#666>Every 10 steps</font><br/><i>Regular updates</i>]
+        N --> O[<b>EMA Benefits</b><br/><font color=#666>Stable convergence</font><br/><i>Better generalization</i>]
+    end
+    
+    subgraph "📊 <b><font color=#d32f2f>CONVERGENCE MONITORING</font></b>"
+        P[<b>Loss Tracking</b><br/><font color=#666>Training & validation</font><br/><i>Performance metrics</i>] --> Q[<b>Gradient Statistics</b><br/><font color=#666>Norm, variance</font><br/><i>Training health</i>]
+        Q --> R[<b>Learning Rate Adjustment</b><br/><font color=#666>Dynamic scheduling</font><br/><i>Adaptive optimization</i>]
+        R --> S[<b>Early Stopping</b><br/><font color=#666>Patience monitoring</font><br/><i>Prevent overfitting</i>]
+    end
+    
+    subgraph "⚡ <b><font color=#f57c00>MEMORY OPTIMIZATION</font></b>"
+        T[<b>Checkpoint Strategy</b><br/><font color=#666>Save every 200 steps</font><br/><i>Progress saving</i>] --> U[<b>Gradient Checkpointing</b><br/><font color=#666>Memory trade-off</font><br/><i>Reduced memory</i>]
+        U --> V[<b>Data Parallelism</b><br/><font color=#666>Multi-GPU support</font><br/><i>Scalability</i>]
+        V --> W[<b>Batch Optimization</b><br/><font color=#666>66 + 8 accumulation</font><br/><i>Memory efficient</i>]
+    end
+    
+    E --> F
+    F --> K
+    K --> P
+    P --> T
+    
+    %% Style definitions
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style F fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style K fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    style P fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style T fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    
+    %% Mathematical formula styling
+    classDef mathFormula fill:#FFF9C4,stroke:#F57F17,stroke-width:2px,color:#000000
+    class C,G,H,I,J,L,M,N,O,P,Q,R,S,T,U,V,W mathFormula

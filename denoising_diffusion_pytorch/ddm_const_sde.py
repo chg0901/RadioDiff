@@ -469,11 +469,29 @@ class DDPM(nn.Module):
         loss_dict.update({f'{prefix}/loss_vlb': loss_vlb})
 
         loss = loss_simple + loss_vlb
+        
+        # Final NaN check for total loss
+        if torch.isnan(loss) or torch.isinf(loss) or loss > 1000.0:
+            print(f"Warning: Abnormal loss detected: {loss} - skipping batch")
+            return torch.tensor(0.0, requires_grad=True), {}
+        
         loss_dict.update({f'{prefix}/loss': loss})
 
         return loss, loss_dict
 
     def get_loss(self, pred, target, mean=True):
+        # Add NaN checks
+        if torch.isnan(pred).any():
+            print("Warning: pred contains NaN values in get_loss")
+            pred = torch.nan_to_num(pred, nan=0.0)
+        if torch.isnan(target).any():
+            print("Warning: target contains NaN values in get_loss")
+            target = torch.nan_to_num(target, nan=0.0)
+            
+        # Add gradient clipping for numerical stability
+        pred = torch.clamp(pred, min=-1e6, max=1e6)
+        target = torch.clamp(target, min=-1e6, max=1e6)
+        
         if self.loss_type == 'l1':
             loss = (target - pred).abs()
             if mean:
@@ -485,7 +503,12 @@ class DDPM(nn.Module):
                 loss = torch.nn.functional.mse_loss(target, pred, reduction='none')
         else:
             raise NotImplementedError("unknown loss type '{loss_type}'")
-
+        
+        # Final NaN check
+        if torch.isnan(loss).any():
+            print("Warning: loss contains NaN values in get_loss")
+            loss = torch.nan_to_num(loss, nan=0.0)
+            
         return loss
 
     @torch.no_grad()
@@ -648,8 +671,11 @@ class LatentDiffusion(DDPM):
         assert sample_type in ['p_loop', 'ddim', 'dpm', 'transformer'] ###  'dpm' is not availible now, suggestion 'ddim'
         self.sample_type = sample_type
 
-        # if ckpt_path is not None:
-        #     self.init_from_ckpt(ckpt_path, ignore_keys, only_model)
+        if ckpt_path is not None and os.path.exists(ckpt_path):
+            print(f"Loading initial checkpoint from {ckpt_path}")
+            self.init_from_ckpt(ckpt_path, ignore_keys, only_model)
+        elif ckpt_path is not None:
+            print(f"Warning: Initial checkpoint path {ckpt_path} does not exist. Starting with random initialization.")
         
         
     def init_first_stage(self, first_stage_model):
@@ -817,15 +843,40 @@ class LatentDiffusion(DDPM):
             noise = 2 * torch.rand_like(x_start) - 1.
         else:
             raise NotImplementedError(f'{self.start_dist} is not supported !')
+        
+        # Add NaN checks for input data
+        if torch.isnan(x_start).any():
+            print("Warning: x_start contains NaN values")
+            x_start = torch.nan_to_num(x_start, nan=0.0)
+        
+        if torch.isnan(noise).any():
+            print("Warning: noise contains NaN values")
+            noise = torch.nan_to_num(noise, nan=0.0)
+        
         # K = -1. * torch.ones_like(x_start)
         # C = noise - x_start  # t = 1000 / 1000
         C = -1 * x_start             # U(t) = Ct, U(1) = -x0
         # C = -2 * x_start               # U(t) = 1/2 * C * t**2, U(1) = 1/2 * C = -x0
         x_noisy = self.q_sample(x_start=x_start, noise=noise, t=t, C=C)  # (b, 2, c, h, w)
-
+        
+        # Add NaN check for noisy input
+        if torch.isnan(x_noisy).any():
+            print("Warning: x_noisy contains NaN values")
+            x_noisy = torch.nan_to_num(x_noisy, nan=0.0)
+        
         """========================================================================"""
         C_pred, noise_pred = self.model(x_noisy, t, *args, **kwargs)   #这个model应该对应UNET预测噪音
         """========================================================================"""
+        
+        # Add NaN checks for model predictions
+        if torch.isnan(C_pred).any():
+            print("Warning: C_pred contains NaN values")
+            C_pred = torch.nan_to_num(C_pred, nan=0.0)
+        
+        if torch.isnan(noise_pred).any():
+            print("Warning: noise_pred contains NaN values")
+            noise_pred = torch.nan_to_num(noise_pred, nan=0.0)
+        
         # C_pred = C_pred / torch.sqrt(t)
         # noise_pred = noise_pred / torch.sqrt(1 - t)
         x_rec = self.pred_x0_from_xt(x_noisy, noise_pred, C_pred, t)       # x_rec:(B, 1, H, W)
@@ -850,10 +901,14 @@ class LatentDiffusion(DDPM):
             if self.cfg.model_name == 'ncsnpp9':
                 simple_weight1 = (t + 1) / t.sqrt()
                 simple_weight2 = (2 - t).sqrt() / (1 - t + self.eps).sqrt()
+            
+            # Add clipping to prevent exploding weights
+            simple_weight1 = torch.clamp(simple_weight1, 0.0, 100.0)
+            simple_weight2 = torch.clamp(simple_weight2, 0.0, 100.0)
         else:
             simple_weight1 = 1
             simple_weight2 = 1
-
+        
         loss_simple += simple_weight1 * self.get_loss(C_pred, target1, mean=False).mean([1, 2, 3]) + \
                        simple_weight2 * self.get_loss(noise_pred, target2, mean=False).mean([1, 2, 3])
         if self.use_l1:
@@ -862,6 +917,13 @@ class LatentDiffusion(DDPM):
             loss_simple = loss_simple / 2
         # rec_weight = (1 - t.reshape(C.shape[0], 1)) ** 2
         rec_weight = 1 - t.reshape(C.shape[0], 1)           # (B, 1)
+        
+        # Add NaN check and clipping for loss
+        if torch.isnan(loss_simple).any():
+            print("Warning: loss_simple contains NaN values - skipping batch")
+            return torch.tensor(0.0, requires_grad=True), {}
+        
+        loss_simple = torch.clamp(loss_simple, max=1000.0)
         loss_simple = loss_simple.mean()
         loss_dict.update({f'{prefix}/loss_simple': loss_simple})
 
@@ -872,11 +934,29 @@ class LatentDiffusion(DDPM):
         loss_dict.update({f'{prefix}/loss_vlb': loss_vlb})
 
         loss = loss_simple + loss_vlb
+        
+        # Final NaN check for total loss
+        if torch.isnan(loss) or torch.isinf(loss) or loss > 1000.0:
+            print(f"Warning: Abnormal loss detected: {loss} - skipping batch")
+            return torch.tensor(0.0, requires_grad=True), {}
+        
         loss_dict.update({f'{prefix}/loss': loss})
 
         return loss, loss_dict
 
     def get_loss(self, pred, target, mean=True):
+        # Add NaN checks
+        if torch.isnan(pred).any():
+            print("Warning: pred contains NaN values in get_loss")
+            pred = torch.nan_to_num(pred, nan=0.0)
+        if torch.isnan(target).any():
+            print("Warning: target contains NaN values in get_loss")
+            target = torch.nan_to_num(target, nan=0.0)
+            
+        # Add gradient clipping for numerical stability
+        pred = torch.clamp(pred, min=-1e6, max=1e6)
+        target = torch.clamp(target, min=-1e6, max=1e6)
+        
         if self.loss_type == 'l1':
             loss = (target - pred).abs()
             if mean:
@@ -888,7 +968,12 @@ class LatentDiffusion(DDPM):
                 loss = torch.nn.functional.mse_loss(target, pred, reduction='none')
         else:
             raise NotImplementedError("unknown loss type '{loss_type}'")
-
+        
+        # Final NaN check
+        if torch.isnan(loss).any():
+            print("Warning: loss contains NaN values in get_loss")
+            loss = torch.nan_to_num(loss, nan=0.0)
+            
         return loss
 
     def cross_entropy_loss_RCF(self, prediction, labelf, beta=1.1):

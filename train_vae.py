@@ -52,11 +52,42 @@ def main(args):
         )
     elif data_cfg['name'] == 'radio':
         dataset = loaders.RadioUNet_c(phase="train")
+    elif data_cfg['name'].startswith('icassp2025_'):
+        # Import the new ICASSP2025 dataloader
+        import sys
+        sys.path.append('./datasets')
+        from icassp2025_dataloader import create_icassp2025_dataloader
+        
+        vae_type = data_cfg['vae_type']
+        dataset = create_icassp2025_dataloader(
+            data_root=data_cfg['data_root'],
+            crop_size=data_cfg.get('crop_size', 96),
+            tx_margin=data_cfg.get('tx_margin', 10),
+            batch_size=data_cfg['batch_size'],
+            vae_type=vae_type,
+            split='train',
+            num_workers=2,
+            shuffle=True
+        ).dataset
     else:
         raise NotImplementedError
 
-    dl = DataLoader(dataset, batch_size=data_cfg['batch_size'], shuffle=True, pin_memory=True,
-                    num_workers=2)
+    # Handle different dataset types
+    if data_cfg['name'].startswith('icassp2025_'):
+        # For ICASSP2025, we already have a dataloader from create_icassp2025_dataloader
+        dl = create_icassp2025_dataloader(
+            data_root=data_cfg['data_root'],
+            crop_size=data_cfg.get('crop_size', 96),
+            tx_margin=data_cfg.get('tx_margin', 10),
+            batch_size=data_cfg['batch_size'],
+            vae_type=data_cfg['vae_type'],
+            split='train',
+            num_workers=2,
+            shuffle=True
+        )
+    else:
+        dl = DataLoader(dataset, batch_size=data_cfg['batch_size'], shuffle=True, pin_memory=True,
+                        num_workers=2)
     train_cfg = cfg['trainer']
     trainer = Trainer(
         model, dl, train_batch_size=data_cfg['batch_size'],
@@ -251,8 +282,10 @@ class Trainer(object):
                             logits_real = log_dict["train/logits_real"]
                             logits_fake = log_dict["train/logits_fake"]
 
+                    # Add default LR initialization to prevent lr: 0.00000 display
+                    log_dict['lr'] = self.opt_ae.param_groups[0]['lr']
+                    
                     if self.step % self.log_freq == 0:
-                        log_dict['lr'] = self.opt_ae.param_groups[0]['lr']
                         describtions = dict2str(log_dict)
                         describtions = "[Train Step] {}/{}: ".format(self.step, self.train_num_steps) + describtions
                         if accelerator.is_main_process:

@@ -1,0 +1,25 @@
+graph TB
+    subgraph "📈 Cosine Decay Schedule"
+        A[Initial LR: 5e-5] -> B[Warmup Phase<br/>Optional]
+        B -> C[Decay Phase<br/>(1-t/T)^0.96]
+        C -> D[Minimum LR: 5e-6<br/>Floor Value]
+    end
+    
+    subgraph "🔧 Optimization Parameters"
+        E[Optimizer: AdamW] -> F[Weight Decay: 1e-4]
+        F -> G[Gradient Clipping: 1.0]
+        G -> H[Accumulation: 8 steps<br/>Effective Batch: 528]
+    end
+    
+    subgraph "🎯 Model Regularization"
+        I[EMA Update] -> J[Beta: 0.999]
+        J -> K[Start After: 10,000 steps]
+        K -> L[Update Every: 10 steps]
+    end
+    
+    A -> E
+    E -> I
+    
+    style A fill:#E3F2FD
+    style E fill:#F1F8E9
+    style I fill:#FFF8E1

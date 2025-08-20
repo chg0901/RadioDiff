@@ -1,0 +1,84 @@
+# Edge Detection Sampling/Inference Configuration
+# Uses EdgeDatasetTest for inference
+
+model:
+  model_type: const_sde
+  model_name: cond_unet
+  image_size: [320, 320]
+  input_keys: ['image', 'cond']
+  ckpt_path:
+  ignore_keys: []
+  only_model: False
+  timesteps: 1000
+  train_sample: -1
+  sampling_timesteps: 1  # Fast sampling for edge detection
+  loss_type: l2
+  objective: pred_noise
+  start_dist: normal
+  perceptual_weight: 0
+  scale_factor: 0.3
+  scale_by_std: True
+  default_scale: True
+  scale_by_softsign: False
+  eps: !!float 1e-4
+  weighting_loss: False
+  
+  first_stage:
+    embed_dim: 3
+    lossconfig:
+      disc_start: 50001
+      kl_weight: 0.000001
+      disc_weight: 0.5
+      disc_in_channels: 1
+    ddconfig:
+      double_z: True
+      z_channels: 3
+      resolution: [320, 320]
+      in_channels: 1  # Edge maps are single channel
+      out_ch: 1
+      ch: 128
+      ch_mult: [1, 2, 4]  # num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: []
+      dropout: 0.0
+    ckpt_path: './edge_vae_results/model-30.pt'  # Path to trained VAE
+
+  unet:
+    dim: 128
+    cond_net: swin
+    channels: 3
+    out_mul: 1
+    dim_mults: [1, 2, 4, 4]  # num_down = len(dim_mults)
+    cond_in_dim: 3
+    cond_dim: 128
+    cond_dim_mults: [2, 4]  # num_down = len(cond_dim_mults)
+    window_sizes1: [[8, 8], [4, 4], [2, 2], [1, 1]]
+    window_sizes2: [[8, 8], [4, 4], [2, 2], [1, 1]]
+    fourier_scale: 16
+    cond_pe: False
+    num_pos_feats: 128
+    cond_feature_size: [80, 80]
+    DPMCARK: False
+
+data:
+  name: edge
+  img_folder: '/path/to/test/images'  # Update with your test images path
+  batch_size: 8
+  num_workers: 4
+
+sampler:
+  sample_type: "slide"  # Sliding window for large images
+  stride: [240, 240]  # Overlap between windows
+  batch_size: 1
+  sample_num: 300
+  use_ema: True
+  save_folder: './edge_inference_results'
+  ckpt_path: './edge_ldm_results/model-50.pt'  # Path to trained LDM
+  use_fp16: False
+  use_timer: False
+  warm_up_steps: 0
+  inference_stop_idx: 8000
+
+params:
+  channels: 3
+  image_size: 256

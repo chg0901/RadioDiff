@@ -1,0 +1,223 @@
+# RadioMapSeer Edge Detection Configuration
+# This configuration is designed for edge detection using the RadioMapSeer dataset
+
+# VAE Training Configuration (copy to configs_edge/radiomapseer_edge_vae_train.yaml)
+model:
+  embed_dim: 3
+  lossconfig:
+    disc_start: 50001
+    kl_weight: 0.000001
+    disc_weight: 0.5
+    disc_in_channels: 1
+  ddconfig:
+    double_z: True
+    z_channels: 3
+    resolution: [256, 256]
+    in_channels: 1
+    out_ch: 1
+    ch: 128
+    ch_mult: [1, 2, 4]
+    num_res_blocks: 2
+    attn_resolutions: []
+    dropout: 0.0
+  ckpt_path: ''
+
+data:
+  name: edge
+  batch_size: 16
+  data_root: './enhanced_suite/archive/radiomapseer_edge_dataset'  # Generated from RadioMapSeer
+  image_size: [256, 256]
+  threshold: 0.3
+  use_uncertainty: False
+  augment_horizontal_flip: True
+  crop_type: 'rand_crop'
+
+trainer:
+  gradient_accumulate_every: 1
+  lr: !!float 5e-6
+  min_lr: !!float 5e-7
+  train_num_steps: 100000
+  save_and_sample_every: 5000
+  log_freq: 100
+  results_folder: './radiomapseer_edge_vae_results'
+  resume_milestone: 0
+  amp: False
+  fp16: False
+  enable_resume: True
+
+---
+
+# LDM Training Configuration (copy to configs_edge/radiomapseer_edge_ldm_train.yaml)
+model:
+  model_type: const_sde
+  model_name: cond_unet
+  image_size: [256, 256]
+  input_keys: ['image', 'cond']
+  ignore_keys: []
+  only_model: False
+  timesteps: 1000
+  train_sample: -1
+  sampling_timesteps: 50
+  loss_type: l2
+  objective: pred_noise
+  start_dist: normal
+  perceptual_weight: 0
+  scale_factor: 0.3
+  scale_by_std: True
+  default_scale: True
+  scale_by_softsign: False
+  eps: !!float 1e-4
+  weighting_loss: False
+  use_disloss: False
+  ckpt_path: ''
+
+  first_stage:
+    embed_dim: 3
+    lossconfig:
+      disc_start: 50001
+      kl_weight: 0.000001
+      disc_weight: 0.5
+      disc_in_channels: 1
+    ddconfig:
+      double_z: True
+      z_channels: 3
+      resolution: [256, 256]
+      in_channels: 1
+      out_ch: 1
+      ch: 128
+      ch_mult: [1, 2, 4]
+      num_res_blocks: 2
+      attn_resolutions: []
+      dropout: 0.0
+    ckpt_path: './radiomapseer_edge_vae_results/model-20.pt'  # UPDATE with your VAE path
+
+  unet:
+    dim: 128
+    cond_net: swin
+    fix_bb: False
+    channels: 3
+    out_mul: 1
+    dim_mults: [1, 2, 4, 4]
+    cond_in_dim: 3
+    cond_dim: 128
+    cond_dim_mults: [2, 4]
+    window_sizes1: [[8, 8], [4, 4], [2, 2], [1, 1]]
+    window_sizes2: [[8, 8], [4, 4], [2, 2], [1, 1]]
+    fourier_scale: 16
+    cond_pe: False
+    num_pos_feats: 128
+    cond_feature_size: [64, 64]
+    input_size: [64, 64]
+    DPMCARK: False
+
+data:
+  name: edge
+  batch_size: 32
+  data_root: './enhanced_suite/archive/radiomapseer_edge_dataset'  # Generated from RadioMapSeer
+  image_size: [256, 256]
+  threshold: 0.3
+  use_uncertainty: False
+  augment_horizontal_flip: True
+  crop_type: 'rand_crop'
+  num_workers: 4
+
+trainer:
+  gradient_accumulate_every: 1
+  lr: !!float 5e-5
+  min_lr: !!float 5e-6
+  train_num_steps: 50000
+  save_and_sample_every: 1000
+  enable_resume: True
+  log_freq: 500
+  results_folder: './radiomapseer_edge_ldm_results'
+  amp: False
+  fp16: False
+  resume_milestone: 0
+  test_before: True
+  ema_update_after_step: 10000
+  ema_update_every: 10
+
+---
+
+# Inference Configuration (copy to configs_edge/radiomapseer_edge_sample.yaml)
+model:
+  model_type: const_sde
+  model_name: cond_unet
+  image_size: [256, 256]
+  input_keys: ['image', 'cond']
+  ckpt_path:
+  ignore_keys: []
+  only_model: False
+  timesteps: 1000
+  train_sample: -1
+  sampling_timesteps: 1
+  loss_type: l2
+  objective: pred_noise
+  start_dist: normal
+  perceptual_weight: 0
+  scale_factor: 0.3
+  scale_by_std: True
+  default_scale: True
+  scale_by_softsign: False
+  eps: !!float 1e-4
+  weighting_loss: False
+  
+  first_stage:
+    embed_dim: 3
+    lossconfig:
+      disc_start: 50001
+      kl_weight: 0.000001
+      disc_weight: 0.5
+      disc_in_channels: 1
+    ddconfig:
+      double_z: True
+      z_channels: 3
+      resolution: [256, 256]
+      in_channels: 1
+      out_ch: 1
+      ch: 128
+      ch_mult: [1, 2, 4]
+      num_res_blocks: 2
+      attn_resolutions: []
+      dropout: 0.0
+    ckpt_path: './radiomapseer_edge_vae_results/model-20.pt'  # UPDATE with your VAE path
+
+  unet:
+    dim: 128
+    cond_net: swin
+    channels: 3
+    out_mul: 1
+    dim_mults: [1, 2, 4, 4]
+    cond_in_dim: 3
+    cond_dim: 128
+    cond_dim_mults: [2, 4]
+    window_sizes1: [[8, 8], [4, 4], [2, 2], [1, 1]]
+    window_sizes2: [[8, 8], [4, 4], [2, 2], [1, 1]]
+    fourier_scale: 16
+    cond_pe: False
+    num_pos_feats: 128
+    cond_feature_size: [64, 64]
+    DPMCARK: False
+
+data:
+  name: edge
+  img_folder: './radiomapseer_test_images'  # Test images directory
+  batch_size: 16
+  num_workers: 4
+
+sampler:
+  sample_type: "slide"
+  stride: [192, 192]
+  batch_size: 1
+  sample_num: 300
+  use_ema: True
+  save_folder: './radiomapseer_edge_inference_results'
+  ckpt_path: './radiomapseer_edge_ldm_results/model-50.pt'  # UPDATE with your LDM path
+  use_fp16: False
+  use_timer: False
+  warm_up_steps: 0
+  inference_stop_idx: 8000
+
+params:
+  channels: 3
+  image_size: 256

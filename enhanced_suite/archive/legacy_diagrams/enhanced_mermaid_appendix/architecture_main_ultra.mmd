@@ -1,0 +1,45 @@
+%% Enhanced RadioDiff System Architecture - Ultra Simple
+graph TB
+    subgraph "📡 INPUT DATA PIPELINE"
+        A["RadioMapSeer Dataset<br/>320×320 Radio Maps<br/>Real-world data"] --> B["RadioUNet_c Loader<br/>batch_size: 66<br/>DPM simulation"]
+        B --> C["Gradient Accumulation<br/>8 steps → Effective: 528<br/>Memory optimization"]
+        C --> D["Input Tensors<br/>image: B×1×320×320<br/>cond: B×3×320×320"]
+    end
+    
+    subgraph "🎯 FIRST STAGE: VAE ENCODER"
+        E["AutoencoderKL<br/>embed_dim: 3<br/>KL divergence"] --> F["Encoder Network<br/>ResNet Architecture<br/>Multi-scale features"]
+        F --> G["Latent Space z<br/>Shape: B×3×80×80<br/>16× compression ratio"]
+        G --> H["Compression Benefits<br/>320×320 → 80×80<br/>Computational efficiency"]
+    end
+    
+    subgraph "🔄 SECOND STAGE: CONDITIONAL U-NET"
+        I["Conditional U-Net<br/>dim: 128<br/>Noise prediction"] --> J["Time Embedding<br/>Sinusoidal Encoding<br/>Positional info"]
+        J --> K["Condition Integration<br/>Swin Transformer<br/>Window-based attention"]
+        K --> L["Multi-scale Features<br/>dim_mults: [1,2,4,4]<br/>Hierarchical processing"]
+        L --> M["Adaptive FFT Module<br/>Fourier Scale: 16<br/>Frequency domain"]
+        M --> N["Noise Prediction<br/>Knowledge-aware objective<br/>Physics-based"]
+    end
+    
+    subgraph "🌊 DIFFUSION PROCESS"
+        O["Forward Diffusion<br/>Noise addition<br/>1000 timesteps"] --> P["Noise Schedule<br/>Linear: 0.0001→0.02<br/>Beta schedule"]
+        P --> Q["Reverse Process<br/>Denoising with condition<br/>Learned reverse"]
+        Q --> R["Knowledge-Aware Objective<br/>Radio propagation physics<br/>Domain knowledge"]
+    end
+    
+    subgraph "⚙️ TRAINING LOOP"
+        S["L2 Loss Computation<br/>Mean squared error<br/>Reconstruction loss"] --> T["Backpropagation<br/>Gradient Clipping: 1.0<br/>Stable training"]
+        T --> U["AdamW Optimizer<br/>lr: 5e-5, wd: 1e-4<br/>Weight decay"]
+        U --> V["Cosine LR Schedule<br/>Learning rate decay<br/>Cosine annealing"]
+        V --> W["EMA Model Update<br/>beta: 0.999<br/>Moving average"]
+    end
+    
+    D --> E
+    G --> I
+    N --> S
+    R --> S
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style E fill:#E8F5E8,stroke:#388E3C,stroke-width:3px
+    style I fill:#FFF3E0,stroke:#F57C00,stroke-width:3px
+    style O fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px
+    style S fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px

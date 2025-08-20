@@ -1,0 +1,26 @@
+graph TB
+    subgraph "📥 Encoder Path"
+        A[Input: 320 x 320 x 1<br/>Radio Map] -> B[Conv2D: 128 x 320 x 320]
+        B -> C[ResNet Block 1<br/>Downsample: 160 x 160]
+        C -> D[ResNet Block 2<br/>Downsample: 80 x 80]
+        D -> E[Bottleneck<br/>Latent Space: 80 x 80 x 3]
+    end
+    
+    subgraph "📤 Decoder Path"
+        F[Latent: 80 x 80 x 3] -> G[ResNet Block 1<br/>Upsample: 160 x 160]
+        G -> H[ResNet Block 2<br/>Upsample: 320 x 320]
+        H -> I[Conv2D: 1 x 320 x 320<br/>Reconstruction]
+    end
+    
+    subgraph "🔧 Regularization"
+        J[KL Divergence<br/>D_KL(q_phi(z|x)||p(z))] -> K[Reconstruction Loss<br/>||x-x̂||²]
+        K -> L[Total Loss<br/>ELBO Optimization]
+    end
+    
+    E -> F
+    J -> L
+    K -> L
+    
+    style A fill:#E3F2FD
+    style F fill:#F3E5F5
+    style L fill:#FFF8E1

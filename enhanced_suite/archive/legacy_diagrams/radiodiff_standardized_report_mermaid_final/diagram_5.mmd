@@ -1,0 +1,37 @@
+graph LR
+    subgraph "🤖 Model Configuration"
+        A[Model Type: const_sde<br/>Constant SDE] -> B[Image Size: [320, 320]
+        B -> C[Timesteps: 1000<br/>Diffusion Steps]
+        C -> D[Sampling Steps: 1<br/>Inference Efficiency]
+        D -> E[Objective: pred_KC<br/>Knowledge-Aware]
+    end
+    
+    subgraph "🎛️ VAE Configuration"
+        F[Embed Dim: 3<br/>Latent Space] -> G[Z Channels: 3<br/>Compression]
+        G -> H[Resolution: 320 x 320<br/>Input Size]
+        H -> I[Channels: 128<br/>Feature Dim]
+        I -> J[Multiplier: [1,2,4]<br/>Scale Factors]
+    end
+    
+    subgraph "🔧 U-Net Configuration"
+        K[Dim: 128<br/>Base Dimension] -> L[Channels: 3<br/>Input Channels]
+        L -> M[Dim Mults: [1,2,4,4]<br/>Multi-scale]
+        M -> N[Cond Dim: 128<br/>Condition Dim]
+        N -> O[Window Sizes<br/>[8,8], [4,4], [2,2], [1,1]
+    end
+    
+    subgraph "⚙️ Training Configuration"
+        P[Batch Size: 66<br/>Per GPU] -> Q[Grad Accum: 8<br/>Effective: 528]
+        Q -> R[LR: 5e-5<br/>Learning Rate]
+        R -> S[Steps: 50000<br/>Total Training]
+        S -> T[Save Every: 200<br/>Checkpoint Freq]
+    end
+    
+    A -> F
+    F -> K
+    K -> P
+    
+    style A fill:#E3F2FD
+    style F fill:#F3E5F5
+    style K fill:#F1F8E9
+    style P fill:#FFF8E1

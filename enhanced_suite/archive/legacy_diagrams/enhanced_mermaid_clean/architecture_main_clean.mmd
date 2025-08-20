@@ -1,0 +1,46 @@
+%% Enhanced RadioDiff System Architecture - Very Simplified
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1e88e5', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#0d47a1', 'lineColor': '#757575', 'secondaryColor': '#43a047', 'tertiaryColor': '#fb8c00', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "📡 INPUT DATA PIPELINE"
+        A[<b>RadioMapSeer Dataset</b><br/>320×320 Radio Maps<br/>Real-world pathloss data] --> B[<b>RadioUNet_c Loader</b><br/>batch_size: 66<br/>DPM simulation]
+        B --> C[<b>Gradient Accumulation</b><br/>8 steps → Effective: 528<br/>Memory optimization]
+        C --> D[<b>Input Tensors</b><br/>image: B×1×320×320<br/>cond: B×3×320×320<br/>Normalized inputs]
+    end
+    
+    subgraph "🎯 FIRST STAGE: VAE ENCODER"
+        E[<b>AutoencoderKL</b><br/>embed_dim: 3<br/>KL divergence] --> F[<b>Encoder Network</b><br/>ResNet Architecture<br/>Multi-scale features]
+        F --> G[<b>Latent Space z</b><br/>Shape: [B, 3, 80, 80]<br/>16× compression ratio]
+        G --> H[<b>Compression Benefits</b><br/>320×320 → 80×80<br/>Computational efficiency]
+    end
+    
+    subgraph "🔄 SECOND STAGE: CONDITIONAL U-NET"
+        I[<b>Conditional U-Net</b><br/>dim: 128<br/>Noise prediction] --> J[<b>Time Embedding</b><br/>Sinusoidal Encoding<br/>Positional info]
+        J --> K[<b>Condition Integration</b><br/>Swin Transformer<br/>Window-based attention]
+        K --> L[<b>Multi-scale Features</b><br/>dim_mults: [1,2,4,4]<br/>Hierarchical processing]
+        L --> M[<b>Adaptive FFT Module</b><br/>Fourier Scale: 16<br/>Frequency domain]
+        M --> N[<b>Noise Prediction</b><br/>epsilon_theta(x_t, t, c)<br/>Knowledge-aware]
+    end
+    
+    subgraph "🌊 DIFFUSION PROCESS"
+        O[<b>Forward Diffusion</b><br/>Noise addition process<br/>1000 timesteps] --> P[<b>Noise Schedule</b><br/>beta_t: linear 0.0001→0.02<br/>Linear schedule]
+        P --> Q[<b>Reverse Process</b><br/>Denoising with conditioning<br/>Learned reverse]
+        Q --> R[<b>Knowledge-Aware Objective</b><br/>pred_KC<br/>Radio propagation physics]
+    end
+    
+    subgraph "⚙️ TRAINING LOOP"
+        S[<b>L2 Loss Computation</b><br/>Mean squared error<br/>L = ||epsilon - epsilon_theta||^2] --> T[<b>Backpropagation</b><br/>Gradient Clipping: 1.0<br/>Stable training]
+        T --> U[<b>AdamW Optimizer</b><br/>lr: 5e-5, wd: 1e-4<br/>Weight decay]
+        U --> V[<b>Cosine LR Schedule</b><br/>Cosine annealing<br/>Learning rate decay]
+        V --> W[<b>EMA Model Update</b><br/>beta: 0.999<br/>Exponential moving average]
+    end
+    
+    D --> E
+    G --> I
+    N --> S
+    R --> S
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style E fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000
+    style I fill:#FFF3E0,stroke:#F57C00,stroke-width:3px,color:#000000
+    style O fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style S fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000

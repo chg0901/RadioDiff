@@ -1,0 +1,41 @@
+%% Enhanced Loss Functions - Clean
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#d32f2f', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#b71c1c', 'lineColor': '#757575', 'secondaryColor': '#7b1fa2', 'tertiaryColor': '#1976d2', 'background': '#f5f5f5'}}}%%
+graph TB
+    subgraph "🔄 RECONSTRUCTION LOSS PIPELINE"
+        A[<b>Ground Truth</b><br/>Original radio map<br/>320×320×1] --> B[<b>VAE Reconstruction</b><br/>Generated output<br/>320×320×1]
+        B --> C[<b>L1 Loss</b><br/>L1 = |x - x_hat|<br/>Robust to outliers]
+        B --> D[<b>MSE Loss</b><br/>MSE = ||x - x_hat||^2<br/>Sensitive to errors]
+        C --> E[<b>Reconstruction Loss</b><br/>L_rec = L1 + MSE<br/>Combined objective]
+        D --> E
+    end
+    
+    subgraph "🧠 PERCEPTUAL LOSS INTEGRATION"
+        F[<b>Input Images</b><br/>Original & reconstructed<br/>Feature extraction] --> G[<b>LPIPS Network</b><br/>Pre-trained VGG<br/>Deep features]
+        H[<b>Feature Maps</b><br/>Deep representations<br/>Feature space] --> I[<b>Perceptual Distance</b><br/>L_perceptual<br/>Human perception]
+        G --> H
+        I --> J[<b>Weighted Addition</b><br/>L_total = L_rec + lambda_p*L_perceptual<br/>Multi-objective]
+    end
+    
+    subgraph "📊 KL DIVERGENCE COMPONENTS"
+        K[<b>Encoder Parameters</b><br/>Mean and variance<br/>Latent distribution] --> L[<b>Posterior Distribution</b><br/>q(z|x)<br/>Approximate posterior]
+        M[<b>Prior Distribution</b><br/>Standard normal<br/>p(z) = N(0, I)] --> N[<b>KL Divergence</b><br/>KL[q||p]<br/>Information bottleneck]
+        L --> N
+        N --> O[<b>Batch Mean</b><br/>L_KL = E[KL(q||p)]<br/>Regularization]
+        O --> P[<b>Weighted KL</b><br/>lambda_KL*L_KL<br/>Trade-off parameter]
+    end
+    
+    subgraph "⚔️ ADVERSARIAL TRAINING"
+        Q[<b>VAE Generator</b><br/>G_phi: x -> z -> x_hat<br/>Reconstruction model] --> R[<b>Generated Samples</b><br/>x_hat = G_phi(x)<br/>Reconstructed output]
+        R --> S[<b>Discriminator</b><br/>D_psi: Real vs Fake<br/>Classifier network]
+        S --> T[<b>Discriminator Output</b><br/>D_psi(x_hat)<br/>Fake logits]
+        T --> U[<b>Generator Loss</b><br/>L_adv = -E[log(D(G(x)))]<br/>Adversarial objective]
+    end
+    
+    E --> J
+    P --> J
+    U --> J
+    
+    style A fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#000000
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px,color:#000000
+    style K fill:#E3F2FD,stroke:#1976D2,stroke-width:3px,color:#000000
+    style Q fill:#E8F5E8,stroke:#388E3C,stroke-width:3px,color:#000000

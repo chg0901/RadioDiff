@@ -1,0 +1,22 @@
+graph TB
+    subgraph "Encoder Path"
+        A[Input] --> B[Conv2D]
+        B --> C[ResNet Block 1]
+        C --> D[ResNet Block 2]
+        D --> E[Bottleneck]
+    end
+    
+    subgraph "Decoder Path"
+        F[Latent] --> G[ResNet Block 1]
+        G --> H[ResNet Block 2]
+        H --> I[Conv2D]
+    end
+    
+    subgraph "Regularization"
+        J[KL Divergence] --> K[Reconstruction Loss]
+        K --> L[Total Loss]
+    end
+    
+    E --> F
+    J --> L
+    K --> L

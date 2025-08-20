@@ -1,0 +1,27 @@
+%% Enhanced VAE Decoder Architecture - Ultra Simple
+graph LR
+    subgraph "🔄 VAE DECODER PIPELINE"
+        A[["Latent Input z<br/>80×80×3<br/>Compressed features"]] --> B[["Initial Convolution<br/>128 channels<br/>Feature expansion"]]
+        B --> C[["ResNet Block 1<br/>Upsample to 160×160<br/>Spatial restoration"]]
+        C --> D[["ResNet Block 2<br/>Upsample to 320×320<br/>Full resolution"]]
+        D --> E[["Final Convolution<br/>1 channel output<br/>Reconstructed map"]]
+    end
+    
+    subgraph "📊 DECODER MATHEMATICS"
+        F[["Generation Process<br/>p_θ(x|z)<br/>Likelihood model"]] --> G[["Reconstruction Distribution<br/>Bernoulli/Gaussian<br/>Output modeling"]]
+        G --> H[["Decoding Function<br/>x̂ = Decoder(z)<br/>Generative mapping"]]
+        H --> I[["Reconstruction Quality<br/>||x - x̂||²<br/>Pixel accuracy"]]
+    end
+    
+    subgraph "⚡ DECODER FEATURES"
+        J[["Progressive Upsampling<br/>80→160→320<br/>Spatial expansion"]] --> K[["Skip Connections<br/>Feature fusion<br/>Detail preservation"]]
+        K --> L[["Hierarchical Generation<br/>Coarse→Fine details<br/>Multi-scale synthesis"]]
+        L --> M[["Output Constraints<br/>Physical validity<br/>Radio propagation"]]
+    end
+    
+    E --> F
+    I --> J
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
+    style J fill:#E8F5E8,stroke:#388E3C,stroke-width:3px

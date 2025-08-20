@@ -1,0 +1,35 @@
+graph LR
+    subgraph "Input Specifications"
+        A[Image: Radio Map] --> B[Condition: Building Layout]
+        B --> C[Mask: Optional]
+        C --> D[Latent: Compressed]
+    end
+    
+    subgraph "VAE Architecture"
+        E[Encoder] --> F[Downsampling]
+        F --> G[Bottleneck]
+        G --> H[Decoder]
+        H --> I[Upsampling]
+        I --> J[Reconstruction]
+    end
+    
+    subgraph "U-Net Architecture"
+        K[Input] --> L[Time Embedding]
+        L --> M[Conditional Processing]
+        M --> N[Multi-scale Features]
+        N --> O[Window Attention]
+        O --> P[Adaptive FFT]
+        P --> Q[Output: Noise]
+    end
+    
+    subgraph "Diffusion Parameters"
+        R[Timesteps] --> S[Beta Schedule]
+        S --> T[Objective]
+        T --> U[Loss]
+        U --> V[Scale Factor]
+    end
+    
+    A --> E
+    B --> M
+    D --> G
+    R --> S

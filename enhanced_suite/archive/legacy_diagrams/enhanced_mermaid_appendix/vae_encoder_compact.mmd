@@ -1,0 +1,20 @@
+%% Compact VAE Encoder Architecture - Horizontal Layout
+graph LR
+    A[["📡 Input<br/>320×320×1<br/>Radio map"]] --> B[["🔧 Conv 128<br/>Feature extraction"]]
+    B --> C[["📐 ResNet 1<br/>320→160<br/>Downsample"]]
+    C --> D[["📐 ResNet 2<br/>160→80<br/>Downsample"]]
+    D --> E[["🎯 Bottleneck<br/>80×80×3<br/>Latent space"]]
+    
+    F[["📊 Mean μ<br/>Distribution"]] --> G[["📊 Var σ²<br/>Uncertainty"]]
+    G --> H[["🔄 Reparameterization<br/>z = μ + σ·ε"]]
+    H --> I[["📈 Latent Dist<br/>q_φ(z|x)"]]
+    
+    J[["⚡ Multi-scale<br/>320→160→80"]] --> K[["🎯 16× Compression<br/>Efficient"]]
+    K --> L[["🔒 Info Bottleneck<br/>Essential features"]]
+    
+    E --> F
+    I --> J
+    
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    style F fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style J fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
