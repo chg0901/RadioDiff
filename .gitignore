@@ -45,3 +45,4 @@ enhanced_suite/archive/test_output/*
 enhanced_suite/archive/test_updated/*
 enhanced_suite/edge_detection_results/*
 enhanced_suite/archive/test_preserved_structure/*
+enhanced_suite/archive/test_edge_results/

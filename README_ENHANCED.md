@@ -48,6 +48,7 @@ This enhanced version of RadioDiff includes comprehensive VAE training capabilit
 - **🔀 Multi-Condition Dataset**: ICASSP2025 dataset with conditional inputs (reflectance + transmittance + distance) for advanced VAE training
 - **📊 ICASSP2025 Multi-Condition Dataset**: Complete multi-condition dataset with 1,250 samples, supporting both single and dual VAE approaches for radio map prediction
 - **🎯 VAE Encoding Strategy Analysis**: Comprehensive analysis of VAE architectures for multi-conditional diffusion models, including detailed comparison of three separate VAEs vs single multi-channel VAE vs cross-attention VAE approaches
+- **🖼️ VAE Sample Visualization**: Comprehensive 3×10 grid visualization tool for RadioDiff VAE sample images with statistical analysis and quality metrics (radiodiff_vae_sample_visualization.py)
 - **🚀 ICASSP2025 VAE Training System**: Complete implementation of three specialized VAEs with Tx-aware cropping, variable-size inference, and advanced training pipeline:
   - **VAE₁**: Building structure analysis (2-channel: reflectance + transmittance)
   - **VAE₂**: Antenna configuration analysis (1-channel: FSPL with radiation patterns)  

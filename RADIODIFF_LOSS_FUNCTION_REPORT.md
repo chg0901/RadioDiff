@@ -14,13 +14,13 @@ The RadioDiff conditional LDM implements a sophisticated loss function with mult
 2. **VLB Loss (loss_vlb)**: Currently disabled (set to 0) - detailed analysis below
 3. **Total Loss**: Combined loss used for backpropagation
 
-![Enhanced Loss Function Architecture](enhanced_suite/diagrams/loss_function_architecture_enhanced.png)
+![Enhanced Loss Function Architecture](enhanced_suite/diagrams/loss_functions/loss_function_architecture_enhanced.png)
 
 ## Detailed Loss Function Analysis
 
 ### 1. Loss Function Architecture
 
-![Loss Function Architecture](enhanced_suite/diagrams/loss_function_diagram.png)
+![Loss Function Architecture](enhanced_suite/diagrams/loss_functions/loss_function_diagram.png)
 
 The loss function follows a multi-stage process:
 
@@ -33,7 +33,7 @@ The loss function follows a multi-stage process:
 
 ### 2. Enhanced Loss Calculation Flow with LaTeX Equations
 
-![Enhanced Loss Calculation Flow](enhanced_suite/diagrams/loss_flowchart_enhanced.png)
+![Enhanced Loss Calculation Flow](enhanced_suite/diagrams/loss_functions/loss_flowchart_enhanced.png)
 
 The loss calculation follows this mathematically rigorous sequence:
 
@@ -53,7 +53,7 @@ The loss calculation follows this mathematically rigorous sequence:
 
 ### 3. Time-Dependent Weighting Strategy
 
-![Loss Weighting Strategy](enhanced_suite/diagrams/loss_weighting.png)
+![Loss Weighting Strategy](enhanced_suite/diagrams/loss_functions/loss_weighting.png)
 
 The loss function implements a sophisticated time-dependent weighting scheme:
 
@@ -100,7 +100,7 @@ The VLB loss would be enabled in these scenarios:
 
 The loss function exhibits multi-stage behavior through time-dependent weighting:
 
-![Multi-Stage Loss Evolution](enhanced_suite/diagrams/multi_stage_loss_evolution.png)
+![Multi-Stage Loss Evolution](enhanced_suite/diagrams/loss_functions/multi_stage_loss_evolution.png)
 
 #### Stage 1: Early Training (t ≈ 1.0)
 - **w₁(t) = 2e^(1-t) ≈ 2**: Lower C prediction weight
@@ -332,7 +332,7 @@ Despite the differences, the implementation maintains theoretical consistency:
 - Implements conditional generation approach
 - Maintains numerical stability
 
-![Loss Function Comparison](enhanced_suite/diagrams/loss_function_comparison.png)
+![Loss Function Comparison](enhanced_suite/diagrams/loss_functions/loss_function_comparison.png)
 
 ### Mathematical Formulation Comparison
 
