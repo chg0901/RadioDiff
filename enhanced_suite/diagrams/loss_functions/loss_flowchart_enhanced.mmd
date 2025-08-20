@@ -1,0 +1,22 @@
+flowchart TD
+    A["Start"] --> B["Sample t ~ U[0,1]"]
+    B --> C["Generate ε ~ N(0,I)"]
+    C --> D["Calculate C = -x₀"]
+    D --> E["x_noisy = x₀ + C·t + √t·ε"]
+    E --> F["UNet Forward Pass"]
+    F --> G["Get Ĉ, ε̂"]
+    G --> H["Reconstruct x̂_rec = x_noisy - Ĉ·t - √t·ε̂"]
+    H --> I["Compute L_C = MSE(Ĉ, C)"]
+    H --> J["Compute L_ε = MSE(ε̂, ε)"]
+    I --> K["Apply w₁(t) = 2e^(1-t)"]
+    J --> L["Apply w₂(t) = e^√t"]
+    K --> M["L_simple = w₁·L_C + w₂·L_ε"]
+    L --> M
+    M --> N["L_vlb = 0 (disabled)"]
+    N --> O["L_total = L_simple + L_vlb"]
+    
+    style A fill:#e1f5fe
+    style O fill:#c8e6c9
+    style F fill:#fff3e0
+    style M fill:#f3e5f5
+    style N fill:#ffebee

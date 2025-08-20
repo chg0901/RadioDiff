@@ -1,0 +1,39 @@
+graph TD
+    A["Input Batch"] --> B["Autoencoder Encoding"]
+    B --> C["Latent Representation z"]
+    C --> D["Time Sampling"]
+    D --> E["Noise Generation"]
+    E --> F["Noisy Latent Construction"]
+    F --> G["UNet Forward Pass"]
+    G --> H["C and Noise Prediction"]
+    H --> I["Loss Computation"]
+    
+    I --> J["C Prediction Loss"]
+    I --> K["Noise Prediction Loss"]
+    J --> L["Time-Dependent Weighting"]
+    K --> L
+    L --> M["Simple Loss"]
+    M --> N["Total Loss"]
+    
+    subgraph "Loss Components"
+        J
+        K
+        L
+        M
+    end
+    
+    subgraph "Mathematical Operations"
+        P["Target C = -1 * x_start"]
+        Q["x_noisy = x_start + C*t + sqrt(t)*noise"]
+        R["x_rec = x_noisy - C_pred*t - sqrt(t)*noise_pred"]
+    end
+    
+    F --> Q
+    H --> R
+    
+    style A fill:#e1f5fe
+    style N fill:#c8e6c9
+    style J fill:#fff3e0
+    style K fill:#fff3e0
+    style L fill:#fff3e0
+    style M fill:#fff3e0

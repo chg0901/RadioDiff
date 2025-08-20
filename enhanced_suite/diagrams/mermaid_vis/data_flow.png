@@ -1,0 +1,69 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1e40af', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#3b82f6', 'lineColor': '#60a5fa', 'secondaryColor': '#7c3aed', 'tertiaryColor': '#10b981', 'clusterBkg': '#f3f4f6', 'clusterBorder': '#9ca3af', 'fontSize': '18px'}}}%%
+graph TD
+    A["RadioDiff Data Pipeline"] --> B["Data Input"]
+    A --> C["Data Processing"]
+    A --> D["Model Flow"]
+    A --> E["Output Flow"]
+    
+    B --> B1["Dataset Configuration"]
+    B1 --> B2["RadioUNet_c Dataset"]
+    B2 --> B3["Dataset Directory"]
+    B3 --> B4["Simulation Type"]
+    B4 --> B5["Additional Parameters"]
+    
+    C --> C1["Data Loading"]
+    C1 --> C2["Batch Configuration"]
+    C2 --> C3["Data Iterator"]
+    C3 --> C4["Batch Extraction"]
+    
+    C --> C5["Batch Structure"]
+    C5 --> C6["Image Data"]
+    C6 --> C7["Condition Data"]
+    C7 --> C8["Optional Mask"]
+    C8 --> C9["Image Names"]
+    
+    D --> D1["VAE Encoding"]
+    D1 --> D2["Input: 320x320x1"]
+    D2 --> D3["Encoder: VAE Encoder"]
+    D3 --> D4["Latent Space"]
+    D4 --> D5["VAE Decoder"]
+    
+    D --> D6["Conditional U-Net"]
+    D6 --> D7["Condition Input"]
+    D7 --> D8["Condition Processing"]
+    D8 --> D9["Multi-Scale Features"]
+    D9 --> D10["Window Attention"]
+    
+    D --> D11["Diffusion Process"]
+    D11 --> D12["Forward Diffusion"]
+    D12 --> D13["Reverse Diffusion"]
+    D13 --> D14["Loss Computation"]
+    
+    E --> E1["Training Output"]
+    E1 --> E2["Total Loss"]
+    E2 --> E3["Reconstruction Loss"]
+    E3 --> E4["KL Divergence Loss"]
+    E4 --> E5["Logging"]
+    
+    E --> E6["Sampling Output"]
+    E6 --> E7["Model Sampling"]
+    E7 --> E8["Generated Images"]
+    E8 --> E9["Sample Saving"]
+    E9 --> E10["Distance Calculation"]
+    
+    E --> E11["Model Checkpoints"]
+    E11 --> E12["Model State"]
+    E12 --> E13["EMA Model"]
+    E13 --> E14["Checkpoint Files"]
+    
+    classDef primaryBox fill:#1e40af,stroke:#3b82f6,stroke-width:2px,color:#ffffff
+    classDef secondaryBox fill:#7c3aed,stroke:#8b5cf6,stroke-width:2px,color:#ffffff
+    classDef tertiaryBox fill:#10b981,stroke:#34d399,stroke-width:2px,color:#ffffff
+    classDef quaternaryBox fill:#ef4444,stroke:#f87171,stroke-width:2px,color:#ffffff
+    classDef quinaryBox fill:#f59e0b,stroke:#fbbf24,stroke-width:2px,color:#ffffff
+    
+    class A primaryBox
+    class B secondaryBox
+    class C tertiaryBox
+    class D quaternaryBox
+    class E quinaryBox

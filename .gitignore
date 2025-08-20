@@ -36,3 +36,12 @@ datasets/
 enhanced_suite/archive/radio_diff_DPM_Train/*
 enhanced_suite/archive/radiomapseer_edge_dataset/*
 enhanced_suite/archive/radiomapseer_edge_dataset_final/*
+enhanced_suite/archive/radiomapseer_edge_dataset_flat/*
+enhanced_suite/archive/radiomapseer_edge_dataset_updated/*
+enhanced_suite/archive/radiomapseer_edge_dataset_updated/
+enhanced_suite/archive/radiomapseer_edge_test_results/*
+enhanced_suite/archive/results/test/*
+enhanced_suite/archive/test_output/*
+enhanced_suite/archive/test_updated/*
+enhanced_suite/edge_detection_results/*
+enhanced_suite/archive/test_preserved_structure/*

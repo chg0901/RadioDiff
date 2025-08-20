@@ -1,0 +1,23 @@
+Mermaid Diagram Mapping
+==================================================
+
+Diagram 1: diagram_4
+File: radiodiff_rendered_mermaid/diagram_4.png
+Original Index: 3
+
+Diagram 2: diagram_5
+File: radiodiff_rendered_mermaid/diagram_5.png
+Original Index: 4
+
+Diagram 3: diagram_7
+File: radiodiff_rendered_mermaid/diagram_7.png
+Original Index: 6
+
+Diagram 4: diagram_11
+File: radiodiff_rendered_mermaid/diagram_11.png
+Original Index: 10
+
+Diagram 5: diagram_12
+File: radiodiff_rendered_mermaid/diagram_12.png
+Original Index: 11
+

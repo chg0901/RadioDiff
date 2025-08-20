@@ -1,0 +1,31 @@
+%% Three Separate VAEs Architecture
+graph TB
+    subgraph "Input Processing"
+        A[Reflectance Channel] --> B[VAE₁: Building Structure]
+        C[Transmittance Channel] --> B
+        D[FSPL Channel] --> E[VAE₂: Antenna Config]
+        F[Radio Map Output] --> G[VAE₃: Radio Map]
+    end
+    
+    subgraph "Latent Spaces"
+        B --> H[Latent₁: 64×64×3]
+        E --> I[Latent₂: 64×64×3]
+        G --> J[Latent₃: 64×64×3]
+    end
+    
+    subgraph "Diffusion Process"
+        H --> K[Cross-Modal Fusion]
+        I --> K
+        J --> K
+        K --> L[Conditional Diffusion]
+    end
+    
+    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef vae fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef latent fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef diffusion fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    class A,C,D,F input
+    class B,E,G vae
+    class H,I,J latent
+    class K,L diffusion

@@ -1,0 +1,30 @@
+%% Single Multi-Channel VAE Architecture
+graph TB
+    subgraph "Input Processing"
+        A[3-Channel Input] --> B[Channel-Specific Conv Layers]
+        B --> C[Feature Fusion Layer]
+        C --> D[Multi-Scale Encoder]
+    end
+    
+    subgraph "Latent Space"
+        D --> E[Joint Latent: 64×64×6]
+        E --> F[Conditional Diffusion Process]
+    end
+    
+    subgraph "Decoding"
+        F --> G[Multi-Scale Decoder]
+        G --> H[Channel-Specific Output Layers]
+        H --> I[Radio Map Reconstruction]
+    end
+    
+    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef encoder fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef latent fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef diffusion fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef decoder fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class A input
+    class B,C,D encoder
+    class E latent
+    class F diffusion
+    class G,H,I decoder

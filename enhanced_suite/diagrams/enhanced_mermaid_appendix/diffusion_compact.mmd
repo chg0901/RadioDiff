@@ -1,0 +1,29 @@
+%% Compact Three-Column Diffusion Process - Optimized Layout
+graph TB
+    subgraph "📈 FORWARD DIFFUSION"
+        A[["x₀: Clean<br/>Radio map"]] --> B[["β: 0.0001→0.02<br/>1000 steps"]]
+        B --> C[["ε ~ N(0, I)<br/>Noise add"]]
+        C --> D[["xₜ = √ᾱₜx₀ + √(1-ᾱₜ)ε<br/>Noisy data"]]
+        D --> E[["q(xₜ|x₀)<br/>Conditional Gaussian"]]
+        E --> F[["x_T: Pure noise<br/>N(0, I)"]]
+    end
+    
+    subgraph "🔄 REVERSE DIFFUSION"
+        G[["xₜ: Noisy input<br/>t = T, T-1, ..., 1"]] --> H[["c: Building layout<br/>Condition"]]
+        H --> I[["ε_θ(xₜ, t, c)<br/>U-Net predict"]]
+        I --> J[["xₜ₋₁ = f(xₜ, ε_θ)<br/>Denoise"]]
+        J --> K[["p_θ(xₜ₋₁|xₜ, c)<br/>Learned reverse"]]
+        K --> L[["x₀: Clean output<br/>Result"]]
+    end
+    
+    subgraph "🎯 KNOWLEDGE-AWARE"
+        M[["pred_KC<br/>Physics objective"]] --> N[["L_KC = E||ε - ε_θ||²<br/>MSE loss"]]
+        N --> O[["EM constraints<br/>Domain knowledge"]]
+        O --> P[["Single-step<br/>Real-time"]]
+        P --> Q[["1000× speedup<br/>Efficient"]]
+        Q --> R[["No field测量<br/>Cost-effective"]]
+    end
+    
+    style A fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+    style G fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    style M fill:#E3F2FD,stroke:#1976D2,stroke-width:2px

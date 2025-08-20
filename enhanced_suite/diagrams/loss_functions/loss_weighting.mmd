@@ -1,0 +1,17 @@
+graph LR
+    A["Time t"] --> B["Weight Function 1"]
+    A --> C["Weight Function 2"]
+    
+    B --> D["2*exp(1-t)"]
+    C --> E["exp(sqrt(t))"]
+    
+    D --> F["C Prediction Weight"]
+    E --> G["Noise Prediction Weight"]
+    
+    F --> H["Weighted C Loss"]
+    G --> I["Weighted Noise Loss"]
+    
+    H --> J["Simple Loss"]
+    I --> J
+    
+    style J fill:#fff3e0

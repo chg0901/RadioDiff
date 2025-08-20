@@ -1,0 +1,34 @@
+%% VAE Architecture Comparison Flowchart
+graph TD
+    A[ICASSP2025 3-Channel Dataset] --> B{VAE Architecture Selection}
+    
+    B --> C[Three Separate VAEs]
+    B --> D[Single Multi-Channel VAE]
+    B --> E[Multi-Scale Cross-Attention VAE]
+    
+    C --> F[Pros: Specialized Encoding<br/>Modularity<br/>Interpretability]
+    C --> G[Cons: High Computational Cost<br/>Latent Space Alignment Issues<br/>Information Loss]
+    
+    D --> H[Pros: Unified Representation<br/>Computational Efficiency<br/>Joint Optimization]
+    D --> I[Cons: Less Specialization<br/>Channel Interference<br/>Training Instability]
+    
+    E --> J[Pros: Balanced Approach<br/>Cross-Modal Learning<br/>Scalability]
+    E --> K[Cons: Complex Implementation<br/>Training Overhead<br/>Hyperparameter Sensitivity]
+    
+    F --> L[Use Case: Research & Comparison]
+    H --> M[Use Case: Baseline Implementation]
+    J --> N[Use Case: Recommended for Production]
+    
+    classDef dataset fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef architecture fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef pros fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef cons fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef usecase fill:#f0f4c3,stroke:#33691e,stroke-width:2px
+    
+    class A dataset
+    class B decision
+    class C,D,E architecture
+    class F,H,J pros
+    class G,I,K cons
+    class L,M,N usecase

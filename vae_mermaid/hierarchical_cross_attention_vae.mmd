@@ -1,0 +1,34 @@
+%% Hierarchical VAE with Cross-Attention Architecture
+graph TB
+    subgraph "Modality-Specific Encoding"
+        A[Reflectance] --> B[Building Encoder]
+        C[Transmittance] --> B
+        D[FSPL] --> E[Antenna Encoder]
+        F[Frequency] --> E
+    end
+    
+    subgraph "Cross-Modal Integration"
+        B --> G[Cross-Attention Layer]
+        E --> G
+        G --> H[Joint Latent Space]
+    end
+    
+    subgraph "Conditional Generation"
+        H --> I[Diffusion U-Net]
+        I --> J[Radio Map Decoder]
+        J --> K[Output Radio Map]
+    end
+    
+    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef encoder fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef attention fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef latent fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef diffusion fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef decoder fill:#f0f4c3,stroke:#33691e,stroke-width:2px
+    
+    class A,C,D,F input
+    class B,E encoder
+    class G attention
+    class H latent
+    class I diffusion
+    class J,K decoder

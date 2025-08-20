@@ -1,0 +1,30 @@
+flowchart TD
+    A["RadioDiff Loss Function: Paper vs Implementation"] --> B["Paper Approach"]
+    A --> C["Implementation Approach"]
+    
+    B --> D["Standard Diffusion Loss"]
+    D --> E["L = MSE(ε̂(x_t, t), ε)"]
+    D --> F["Single prediction objective"]
+    D --> G["No detailed formulation"]
+    
+    C --> H["Enhanced Dual Prediction Loss"]
+    H --> I["L = w₁(t)·MSE(Ĉ, C) + w₂(t)·MSE(ε̂, ε)"]
+    H --> J["Time-dependent weighting"]
+    H --> K["Dual prediction: C + noise"]
+    
+    J --> L["w₁(t) = 2e^(1-t)"]
+    J --> M["w₂(t) = e^√t"]
+    
+    K --> N["C coefficient prediction"]
+    K --> O["Noise prediction"]
+    
+    C --> P["Additional Features"]
+    P --> Q["Numerical stability measures"]
+    P --> R["VLB loss disabled"]
+    P --> S["Multi-stage training behavior"]
+    
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style H fill:#c8e6c9
+    style P fill:#e1bee7

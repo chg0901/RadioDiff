@@ -1,0 +1,36 @@
+%% Enhanced Diffusion Process - Ultra Simple
+graph TB
+    subgraph "📈 FORWARD DIFFUSION PROCESS"
+        A["Clean Data x_0<br/>Radio map<br/>Original distribution"] --> B["Noise Schedule<br/>Linear: 0.0001→0.02<br/>1000 timesteps"]
+        B --> C["Noise Addition<br/>Gaussian noise<br/>Random perturbation"]
+        C --> D["Noisy Data x_t<br/>Forward process<br/>Gradual corruption"]
+        D --> E["Forward Distribution<br/>Conditional Gaussian<br/>q(x_t|x_0)"]
+    end
+    
+    subgraph "🔄 REVERSE DIFFUSION PROCESS"
+        F["Noisy Input x_t<br/>Iterative denoising<br/>t = T, T-1, ..., 1"] --> G["Condition Integration<br/>Building layout<br/>Spatial conditioning"]
+        G --> H["U-Net Prediction<br/>Noise estimation<br/>epsilon_theta(x_t, t, c)"]
+        H --> I["Denoising Step<br/>Reverse process<br/>x_{t-1} = f(x_t, epsilon_theta)"]
+        I --> J["Reverse Distribution<br/>Learned reverse<br/>p_theta(x_{t-1}|x_t, c)"]
+    end
+    
+    subgraph "🎯 KNOWLEDGE-AWARE OBJECTIVE"
+        K["Training Objective<br/>pred_KC<br/>Radio propagation physics"] --> L["Loss Function<br/>Mean squared error<br/>L_KC = E||epsilon - epsilon_theta||^2"]
+        L --> M["Optimization Target<br/>Parameter learning<br/>min_theta L_KC"]
+        M --> N["Physics Integration<br/>Electromagnetic constraints<br/>Domain knowledge"]
+    end
+    
+    subgraph "⚡ SAMPLING EFFICIENCY"
+        O["Traditional Diffusion<br/>1000 steps<br/>Slow inference"] --> P["RadioDiff Innovation<br/>Single-step sampling<br/>Real-time generation"]
+        P --> Q["Computational Benefit<br/>1000x speedup<br/>Practical deployment"]
+        Q --> R["Sampling-Free<br/>No field measurements<br/>Cost-effective"]
+    end
+    
+    E --> F
+    J --> K
+    N --> O
+    
+    style A fill:#FFF3E0,stroke:#F57C00,stroke-width:3px
+    style F fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
+    style K fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style O fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px

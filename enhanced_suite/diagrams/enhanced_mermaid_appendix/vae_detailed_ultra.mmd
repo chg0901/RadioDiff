@@ -1,0 +1,34 @@
+%% Enhanced VAE Architecture - Ultra Simple
+graph LR
+    subgraph "🏗️ VAE ENCODER PATH"
+        A["Input Image<br/>320×320×1<br/>Radio map"] --> B["Initial Convolution<br/>128 channels<br/>Feature extraction"]
+        B --> C["ResNet Block 1<br/>Downsample to 160×160<br/>Multi-scale features"]
+        C --> D["ResNet Block 2<br/>Downsample to 80×80<br/>Hierarchical processing"]
+        D --> E["Bottleneck Layer<br/>80×80×3 latent space<br/>Compressed representation"]
+    end
+    
+    subgraph "🔄 VAE DECODER PATH"
+        F["Latent Input<br/>80×80×3<br/>Compressed features"] --> G["ResNet Block 1<br/>Upsample to 160×160<br/>Feature expansion"]
+        G --> H["ResNet Block 2<br/>Upsample to 320×320<br/>Spatial restoration"]
+        H --> I["Final Convolution<br/>1 channel output<br/>Reconstruction"]
+    end
+    
+    subgraph "📊 VAE MATHEMATICAL FOUNDATION"
+        J["Encoder Distribution<br/>Approximate posterior<br/>q_phi(z|x)"] --> K["Latent Regularization<br/>KL divergence<br/>Information bottleneck"]
+        K --> L["Decoder Distribution<br/>Generative model<br/>p_theta(x|z)"]
+        L --> M["ELBO Objective<br/>Evidence lower bound<br/>Variational inference"]
+    end
+    
+    subgraph "⚖️ VAE LOSS COMPONENTS"
+        N["Reconstruction Loss<br/>L2 distance<br/>Pixel-level error"] --> O["KL Divergence<br/>Regularization<br/>Distribution matching"]
+        O --> P["Total VAE Loss<br/>Balanced objective<br/>Reconstruction + Regularization"]
+    end
+    
+    E --> F
+    J --> K
+    N --> O
+    
+    style A fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
+    style F fill:#E3F2FD,stroke:#0277BD,stroke-width:3px
+    style J fill:#E8F5E8,stroke:#2E7D32,stroke-width:3px
+    style N fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px

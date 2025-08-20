@@ -1,0 +1,53 @@
+%% Multi-Scale Cross-Attention VAE - Recommended Architecture
+graph TB
+    subgraph "Multi-Modal Input Processing"
+        A[Building Structure<br/>Reflectance + Transmittance] --> B[Convolutional Encoder<br/>Kernel: 3×3, Stride: 2]
+        C[Antenna Configuration<br/>FSPL + Frequency] --> D[Convolutional Encoder<br/>Kernel: 5×5, Stride: 2]
+    end
+    
+    subgraph "Multi-Scale Feature Extraction"
+        B --> E[Scale 1: 128×128×64]
+        E --> F[Scale 2: 64×64×128]
+        F --> G[Scale 3: 32×32×256]
+        
+        D --> H[Scale 1: 128×128×64]
+        H --> I[Scale 2: 64×64×128]
+        I --> J[Scale 3: 32×32×256]
+    end
+    
+    subgraph "Cross-Scale Attention"
+        F --> K[Cross-Attention<br/>Building → Antenna]
+        I --> K
+        G --> L[Cross-Attention<br/>Building → Antenna]
+        J --> L
+        K --> M[Fused Features: 64×64×256]
+        L --> M
+    end
+    
+    subgraph "Latent Space Compression"
+        M --> N[VAE Encoder<br/>μ, σ parameters]
+        N --> O[Latent Space: 32×32×8]
+        O --> P[Reparameterization Trick]
+    end
+    
+    subgraph "Conditional Diffusion"
+        P --> Q[Diffusion Process<br/>with Conditioning]
+        Q --> R[VAE Decoder]
+        R --> S[Output: 256×256×1]
+    end
+    
+    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef encoder fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef features fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef attention fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef latent fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef diffusion fill:#f0f4c3,stroke:#33691e,stroke-width:2px
+    classDef decoder fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    
+    class A,C input
+    class B,D encoder
+    class E,F,G,H,I,J features
+    class K,L attention
+    class M,N,O,P latent
+    class Q diffusion
+    class R,S decoder

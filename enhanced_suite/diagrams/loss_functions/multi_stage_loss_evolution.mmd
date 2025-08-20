@@ -1,0 +1,36 @@
+flowchart TD
+    A["Multi-Stage Loss Evolution"] --> B["Stage 1: Early Training"]
+    A --> C["Stage 2: Mid Training"]
+    A --> D["Stage 3: Late Training"]
+    
+    B --> E["t ≈ 1.0"]
+    C --> F["t ≈ 0.5"]
+    D --> G["t ≈ 0.1"]
+    
+    E --> H["w₁(t) = 2e^(1-t) ≈ 2e^0 = 2"]
+    F --> I["w₁(t) = 2e^(1-t) ≈ 2e^0.5 ≈ 3.3"]
+    G --> J["w₁(t) = 2e^(1-t) ≈ 2e^0.9 ≈ 4.9"]
+    
+    E --> K["w₂(t) = e^√t ≈ e^1 = 2.7"]
+    F --> L["w₂(t) = e^√t ≈ e^0.7 ≈ 2.0"]
+    G --> M["w₂(t) = e^√t ≈ e^0.3 ≈ 1.3"]
+    
+    H --> N["Focus: C Prediction"]
+    I --> O["Balance: Both Components"]
+    J --> P["Focus: C Prediction"]
+    
+    K --> Q["Moderate Noise Weight"]
+    L --> R["Balanced Noise Weight"]
+    M --> S["Lower Noise Weight"]
+    
+    N --> T["Strategy: Drift Learning"]
+    O --> U["Strategy: Balanced Learning"]
+    P --> V["Strategy: Refinement"]
+    
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style T fill:#ffecb3
+    style U fill:#e1bee7
+    style V fill:#c8e6c9

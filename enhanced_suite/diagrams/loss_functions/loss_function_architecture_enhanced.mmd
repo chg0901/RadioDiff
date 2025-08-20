@@ -1,0 +1,30 @@
+flowchart TD
+    A["Loss Function Architecture"] --> B["Simple Loss L_simple"]
+    A --> C["VLB Loss L_vlb"]
+    
+    B --> D["C Prediction Loss"]
+    B --> E["Noise Prediction Loss"]
+    
+    D --> F["L_C = MSE(Ĉ, C)"]
+    E --> G["L_ε = MSE(ε̂, ε)"]
+    
+    F --> H["Weight: w₁(t) = 2e^(1-t)"]
+    G --> I["Weight: w₂(t) = e^√t"]
+    
+    H --> J["Weighted L_C"]
+    I --> J
+    
+    J --> K["L_simple = w₁·L_C + w₂·L_ε"]
+    
+    C --> L["Currently Disabled"]
+    L --> M["L_vlb = 0"]
+    
+    K --> N["Total Loss"]
+    M --> N
+    
+    N --> O["L_total = L_simple + L_vlb"]
+    
+    style A fill:#e3f2fd
+    style O fill:#c8e6c9
+    style L fill:#ffebee
+    style K fill:#f3e5f5

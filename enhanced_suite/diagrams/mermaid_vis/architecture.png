@@ -1,0 +1,56 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1e40af', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#3b82f6', 'lineColor': '#60a5fa', 'secondaryColor': '#7c3aed', 'tertiaryColor': '#10b981', 'clusterBkg': '#f3f4f6', 'clusterBorder': '#9ca3af', 'fontSize': '18px'}}}%%
+graph TD
+    A["RadioDiff Training Pipeline"] --> B["Configuration Loading"]
+    A --> C["Model Initialization"]
+    A --> D["Data Pipeline"]
+    A --> E["Training Process"]
+    
+    B --> B1["Load YAML Config"]
+    B1 --> B2["Parse Arguments"]
+    
+    C --> C1["First Stage: VAE"]
+    C1 --> C2["Encoder: 320x320 → 80x80"]
+    C2 --> C3["Decoder: 80x80 → 320x320"]
+    
+    C --> C4["Second Stage: U-Net"]
+    C4 --> C5["Dimensions: dim=128, channels=3"]
+    C5 --> C6["Conditional Processing"]
+    C6 --> C7["Window Attention"]
+    
+    C --> C8["Latent Diffusion Model"]
+    C8 --> C9["Diffusion Parameters"]
+    C9 --> C10["Objective: pred_KC"]
+    
+    D --> D1["Radio Dataset"]
+    D1 --> D2["Data Root: RadioMapSeer"]
+    D2 --> D3["Batch Size: 66"]
+    D3 --> D4["DataLoader Setup"]
+    
+    E --> E1["Trainer Initialization"]
+    E1 --> E2["Training Parameters"]
+    E2 --> E3["Gradient Accumulation"]
+    E3 --> E4["EMA Setup"]
+    
+    E --> E5["Training Loop"]
+    E5 --> E6["Forward Pass"]
+    E6 --> E7["Loss Computation"]
+    E7 --> E8["Backward Pass"]
+    E8 --> E9["Optimizer Step"]
+    E9 --> E10["EMA Update"]
+    
+    E --> E11["Sampling & Saving"]
+    E11 --> E12["Model Sampling"]
+    E12 --> E13["Save Samples"]
+    E13 --> E14["Save Model"]
+    
+    classDef primaryBox fill:#1e40af,stroke:#3b82f6,stroke-width:2px,color:#ffffff
+    classDef secondaryBox fill:#7c3aed,stroke:#8b5cf6,stroke-width:2px,color:#ffffff
+    classDef tertiaryBox fill:#10b981,stroke:#34d399,stroke-width:2px,color:#ffffff
+    classDef quaternaryBox fill:#ef4444,stroke:#f87171,stroke-width:2px,color:#ffffff
+    classDef quinaryBox fill:#f59e0b,stroke:#fbbf24,stroke-width:2px,color:#ffffff
+    
+    class A primaryBox
+    class B secondaryBox
+    class C tertiaryBox
+    class D quaternaryBox
+    class E quinaryBox

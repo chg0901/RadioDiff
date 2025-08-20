@@ -1,0 +1,46 @@
+%% Enhanced Training Configuration - Ultra Simple
+graph TB
+    subgraph "🤖 MODEL CONFIGURATION"
+        A["Model Type<br/>const_sde<br/>Constant SDE diffusion"] --> B["Image Size<br/>[320, 320]<br/>Radio map resolution"]
+        B --> C["Timesteps<br/>1000<br/>Diffusion steps"]
+        C --> D["Sampling Steps<br/>1<br/>Single-step inference"]
+        D --> E["Objective<br/>pred_KC<br/>Knowledge-aware"]
+    end
+    
+    subgraph "🎛️ VAE PARAMETERS"
+        F["Embedding Dimension<br/>3<br/>Latent space depth"] --> G["Z Channels<br/>3<br/>Latent channels"]
+        G --> H["Resolution<br/>320×320<br/>Input size"]
+        H --> I["Channels<br/>128<br/>Feature dimension"]
+        I --> J["Multipliers<br/>[1, 2, 4]<br/>Scale factors"]
+    end
+    
+    subgraph "🔧 U-NET CONFIGURATION"
+        K["Base Dimension<br/>128<br/>Feature channels"] --> L["Input Channels<br/>3<br/>Latent input"]
+        L --> M["Dimension Multipliers<br/>[1, 2, 4, 4]<br/>Multi-scale"]
+        M --> N["Condition Dimension<br/>128<br/>Conditioning space"]
+        N --> O["Window Sizes<br/>[8,8], [4,4], [2,2], [1,1]<br/>Swin attention"]
+    end
+    
+    subgraph "⚙️ TRAINING CONFIGURATION"
+        P["Batch Size<br/>66<br/>Per GPU"] --> Q["Gradient Accumulation<br/>8 steps<br/>Effective: 528"]
+        Q --> R["Learning Rate<br/>5e-5<br/>Initial LR"]
+        R --> S["Total Steps<br/>50000<br/>Training duration"]
+        S --> T["Save Frequency<br/>200 steps<br/>Checkpoint interval"]
+    end
+    
+    subgraph "📊 PERFORMANCE METRICS"
+        U["Memory Usage<br/>Optimized<br/>Single GPU"] --> V["Computational Cost<br/>Reduced<br/>Latent compression"]
+        V --> W["Inference Speed<br/>Real-time<br/>Single-step"]
+        W --> X["Quality Metrics<br/>RMSE, SSIM, PSNR<br/>Evaluation criteria"]
+    end
+    
+    E --> F
+    F --> K
+    K --> P
+    P --> U
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style F fill:#E8F5E8,stroke:#388E3C,stroke-width:3px
+    style K fill:#FFF3E0,stroke:#F57C00,stroke-width:3px
+    style P fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px
+    style U fill:#F3E5F5,stroke:#7B1FA2,stroke-width:3px
