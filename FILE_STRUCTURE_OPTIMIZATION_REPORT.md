@@ -91,7 +91,11 @@ enhanced_suite/
 │   │   └── RADIOMAPSEER_EDGE_DETECTION_FINAL_SUMMARY.md
 │   ├── irt4_training/           # IRT4 training analysis scripts
 │   │   ├── IRT4_TRAINING_REPORT.md
-│   │   └── irt4_*.py
+│   │   ├── irt4_training_analysis.py
+│   │   └── irt4_sample_visualization.py
+│   ├── irt4_analysis/           # IRT4 comprehensive analysis scripts
+│   │   ├── irt4_compare_images.py    # Enhanced image comparison with 8 metrics
+│   │   └── irt4_sampling_analysis.py # Original sampling analysis
 │   └── test_validation/          # Test and validation scripts
 │       ├── test_edge_*.py
 │       ├── validate_edge_*.py
@@ -118,6 +122,12 @@ enhanced_suite/
 ├── 📁 archive/                   # Additional archived files (moved from root)
 │   ├── comparison_results*/       # Comparison result directories
 │   ├── edge_test_results/         # Edge detection test results
+│   ├── irt4_comparison_results/  # IRT4 comprehensive analysis results
+│   │   ├── irt4_*.png             # 6 visualization types
+│   │   ├── irt4_*.csv             # Statistical data
+│   │   └── IRT4_ENHANCED_COMPARISON_REPORT.md
+│   ├── irt4_original_results/     # Original IRT4 analysis results
+│   │   └── IRT4-analysis/         # Original sampling analysis
 │   ├── radio_diff_DPM_Train/      # DPM training outputs
 │   ├── radiomapseer_edge_dataset*/ # RadioMapSeer edge datasets
 │   ├── test_*/                    # Test directories

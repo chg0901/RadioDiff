@@ -46,3 +46,8 @@ enhanced_suite/archive/test_updated/*
 enhanced_suite/edge_detection_results/*
 enhanced_suite/archive/test_preserved_structure/*
 enhanced_suite/archive/test_edge_results/
+
+irt4train/*
+results/IRT4-test/*
+results/radio_diff_DPM_Train/*
+enhanced_suite/archive/irt4_final_results/IRT4-test/*
